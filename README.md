@@ -19,7 +19,7 @@ mantiene las tareas de alto riesgo bloqueadas por ADRs aprobadas.
 
 - cinco hitos, desde gobierno hasta validación territorial;
 - epic `DNA-56`;
-- tareas `DNA-57` a `DNA-80` con criterios de aceptación;
+- tareas `DNA-57` a `DNA-81` con criterios de aceptación;
 - relaciones `blockedBy` para proteger el camino crítico;
 - cuatro ADR P0 en `Todo`;
 - implementación posterior en `Backlog` hasta aprobación.
@@ -74,6 +74,8 @@ Linear.
 - [Resumen del producto](docs/product-brief.md)
 - [Grafo de tareas](docs/task-graph.md)
 - [Trabajo coordinado para tres personas](docs/team-workflow.md)
+- [Arquitectura móvil de campo](docs/mobile-field-architecture.md)
+- [Requisitos UX/UI móvil](docs/mobile-ux-requirements.md)
 - [Runbook](docs/runbook.md)
 - [Prueba de funcionamiento](docs/proof-of-life.md)
 - [Registro de decisiones](docs/decisions/README.md)

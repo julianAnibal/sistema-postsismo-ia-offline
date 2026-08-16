@@ -6,14 +6,19 @@ Construir un sistema offline de captura, asistencia visual, revisión profesiona
 y consolidación georreferenciada para evaluación postsismo y necesidades de la
 población afectada.
 
-## Arquitectura acordada
+## Arquitectura propuesta
+
+La selección móvil detallada está en la ADR propuesta
+[DNA-81](decisions/DNA-81-mobile-runtime-local-ai.md). No se considera aceptada
+hasta completar las dependencias, la revisión cruzada y el benchmark en los
+teléfonos del piloto.
 
 | Capa | Decisión inicial |
 |---|---|
 | Piloto | ODK Collect y ODK Central privado |
-| Móvil | React Native con compilación nativa |
-| Datos locales | SQLite cifrada, migraciones y outbox |
-| IA | ONNX Runtime Mobile; modelos pequeños y auditables |
+| Móvil | React Native + Expo con compilación nativa; sin daemon permanente |
+| Datos locales | SQLite/SQLCipher, WAL, migraciones, archivos privados y outbox |
+| IA | ONNX Runtime React Native con niveles A/B/C y modo manual siempre disponible |
 | Mapa móvil | MapLibre Native con paquetes autorizados |
 | Núcleo | API versionada, PostgreSQL/PostGIS y objetos privados |
 | Web maestra | Next.js/OpenLayers existente con consola autenticada |
@@ -34,6 +39,8 @@ reporte ciudadano, una inferencia remota y una inspección profesional.
 
 - Crack-Seg localiza posibles grietas; no diagnostica seguridad global.
 - La IA no emite clasificación oficial ni detecta personas atrapadas.
+- No se promete compatibilidad universal; se publica una matriz medida por nivel.
+- La PWA es contingencia, no la única copia de una inspección crítica.
 - Edificación, hogar, persona, rescate y publicación son dominios separados.
 - Una foto sin escala no mide de forma confiable el ancho de una grieta.
 - OpenStreetMap es fuente cartográfica, no servidor gratuito de mapas offline.

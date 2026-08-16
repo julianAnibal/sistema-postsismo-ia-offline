@@ -19,6 +19,10 @@ flowchart TD
   S["DNA-59 Esquema"] --> G
   P["DNA-60 Privacidad"] --> G
   L["DNA-61 Licencias"] --> G
+  A --> U["DNA-81 Runtime móvil"]
+  S --> U
+  P --> U
+  L --> U
   G --> F["DNA-63 Formularios ODK"]
   P --> C["DNA-64 ODK Central"]
   L --> M["DNA-65 Mapa piloto"]
@@ -26,6 +30,7 @@ flowchart TD
   C --> O
   M --> O
   O --> R["DNA-67 Esqueleto móvil"]
+  U --> R
   R --> D["DNA-68 SQLite"]
   D --> Y["DNA-74 Sincronización"]
   B["DNA-72 Backend"] --> Y
@@ -44,7 +49,7 @@ confirme que sus dependencias y aprobaciones están completas.
 ## Frentes
 
 - **F1 Gobierno, datos y campo:** DNA-58, 60, 62, 63, 66 y 80.
-- **F2 Móvil, offline e IA:** DNA-57, 61, 65, 67, 68, 69, 70, 71 y 74.
+- **F2 Móvil, offline e IA:** DNA-57, 61, 65, 67, 68, 69, 70, 71, 74 y 81.
 - **F3 Plataforma, web e informes:** DNA-59, 64, 72, 73, 75, 76, 77, 78 y 79.
 
 La asignación, las revisiones cruzadas y el contrato de ramas/PR están en
