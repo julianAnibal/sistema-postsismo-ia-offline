@@ -42,7 +42,7 @@ la entrega, pero no aprueba en solitario sus propias decisiones.
 
 ## Proteccion de `main`
 
-La validacion `Validate harness` se ejecuta en cada push y pull request. GitHub
+La validación `Validate 1000 Ojos` se ejecuta en cada push y pull request. GitHub
 no permite reglas obligatorias de proteccion para este repositorio privado con
 el plan actual; requiere GitHub Pro o visibilidad publica. Mientras siga
 privado, el equipo aplica estas reglas operativas:

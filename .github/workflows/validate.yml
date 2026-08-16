@@ -1,4 +1,4 @@
-name: Validate harness
+name: Validate 1000 Ojos
 
 on:
   pull_request:
@@ -40,12 +40,17 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: apps/mobile/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            apps/mobile/package-lock.json
+
+      - name: Install backend and shared-contract dependencies
+        run: npm ci
 
       - name: Install mobile dependencies
         run: npm ci --prefix apps/mobile
 
-      - name: Validate harness
+      - name: Validate monorepo
         env:
           UV_PROJECT_ENVIRONMENT: .venv-validation
         run: zsh ./scripts/validate.sh

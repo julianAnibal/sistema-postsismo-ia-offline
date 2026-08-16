@@ -1,5 +1,11 @@
 # 🏠 MilOjos — ¿Puedo volver a casa?
 
+> **Documento conceptual histórico, no descripción del software desplegado.**
+> Las referencias a WhatsApp, Twilio, Claude, n8n, Supabase, URLs por completar
+> y triaje corresponden al pitch original. La implementación reproducible y sus
+> límites vigentes están en [README.md](./README.md) y no emite diagnósticos,
+> decisiones de habitabilidad ni triaje oficial.
+
 **Agente de IA por WhatsApp que hace triaje estructural de viviendas después de un desastre y ordena la fila de inspección de los ingenieros — para que la capacidad escasa llegue primero donde más urge.**
 
 > Hac[k]athon CTW·2026 · AI for Public Good · **Track 04: Planeta y Comunidad · Resiliencia** · Bogotá, 15–16 de agosto de 2026
