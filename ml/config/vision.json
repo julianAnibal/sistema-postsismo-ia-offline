@@ -1,0 +1,19 @@
+{
+  "base_model": "yolo11n-seg.pt",
+  "task": "instance_segmentation",
+  "seed": 1000,
+  "image_size": 640,
+  "epochs": 80,
+  "batch": 8,
+  "classes": [
+    "crack",
+    "spalling",
+    "deformation",
+    "partial_collapse",
+    "moisture"
+  ],
+  "minimum_metrics": {
+    "mask_map50": 0.7,
+    "critical_recall": 0.85
+  }
+}

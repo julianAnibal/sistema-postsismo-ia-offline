@@ -39,6 +39,13 @@ npm run web
 
 Detalles de funcionamiento y límites: [apps/mobile/README.md](apps/mobile/README.md).
 
+## Entrenamiento de IA
+
+El recorrido reproducible de preparación de datos, fine-tuning LoRA,
+segmentación visual, evaluación y empaquetado móvil está en
+[ml/README.md](ml/README.md). Los controles operativos y de seguridad están en
+[docs/training-runbook.md](docs/training-runbook.md).
+
 ## Primer arranque
 
 OpenSymphony necesita una API key personal de Linear en la terminal. La conexión

@@ -1,0 +1,17 @@
+{
+  "base_model": "SET_GEMMA_4_E2B_MODEL_ID",
+  "task": "sft_lora",
+  "seed": 1000,
+  "epochs": 3,
+  "learning_rate": 0.0002,
+  "max_length": 2048,
+  "lora_rank": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "required_output_fields": [
+    "summary",
+    "missing_fields",
+    "requires_expert_review",
+    "source_ids"
+  ]
+}

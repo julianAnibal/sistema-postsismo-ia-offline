@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "1000 ojos language training record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_id", "event_id", "infrastructure_id", "task", "messages", "review", "synthetic"],
+  "properties": {
+    "record_id": {"type": "string", "minLength": 1},
+    "event_id": {"type": "string", "minLength": 1},
+    "infrastructure_id": {"type": "string", "minLength": 1},
+    "task": {"enum": ["draft_report", "insufficient_evidence", "no_visible_damage", "source_answer"]},
+    "messages": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["role", "content"],
+        "properties": {"role": {"enum": ["system", "user", "assistant"]}, "content": {"type": "string", "minLength": 1}}
+      }
+    },
+    "review": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "reviewer_role", "review_count"],
+      "properties": {"status": {"const": "approved"}, "reviewer_role": {"const": "structural_engineer"}, "review_count": {"type": "integer", "minimum": 2}}
+    },
+    "synthetic": {"type": "boolean"}
+  }
+}

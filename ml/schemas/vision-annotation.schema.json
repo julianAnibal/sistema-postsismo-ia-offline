@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "1000 ojos vision annotation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["annotation_id", "event_id", "infrastructure_id", "media_sha256", "image_path", "mask_path", "element", "condition", "observability", "view_type", "review"],
+  "properties": {
+    "annotation_id": {"type": "string", "minLength": 1},
+    "event_id": {"type": "string", "minLength": 1},
+    "infrastructure_id": {"type": "string", "minLength": 1},
+    "media_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "image_path": {"type": "string", "minLength": 1},
+    "mask_path": {"type": "string", "minLength": 1},
+    "element": {"enum": ["wall", "column", "beam", "slab", "roof", "foundation", "nonstructural", "unknown"]},
+    "condition": {"enum": ["crack", "spalling", "deformation", "partial_collapse", "moisture"]},
+    "observability": {"enum": ["good", "partial", "poor"]},
+    "view_type": {"enum": ["context", "exterior", "interior", "detail"]},
+    "review": {
+      "type": "object", "required": ["status", "reviewer_role", "review_count"],
+      "properties": {"status": {"const": "approved"}, "reviewer_role": {"const": "structural_engineer"}, "review_count": {"type": "integer", "minimum": 2}}
+    }
+  }
+}
