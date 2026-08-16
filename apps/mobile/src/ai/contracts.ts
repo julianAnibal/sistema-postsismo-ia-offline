@@ -1,12 +1,33 @@
 import { KnowledgeSource } from '../domain/types';
 
+export type LocalModelTask =
+  | 'capture-quality'
+  | 'visible-condition-segmentation'
+  | 'language-drafting';
+
+export interface ModelEvaluationEvidence {
+  metric: string;
+  value: number;
+  datasetReleaseId: string;
+  reportSha256: string;
+  reportPath: string;
+}
+
 export interface ModelPackManifest {
+  manifestVersion: 1;
   id: string;
   version: string;
   runtime: 'onnx-runtime-mobile' | 'litert-lm';
+  task: LocalModelTask | null;
   sha256: string;
   sizeBytes: number;
   minimumMemoryBytes: number;
+  estimatedPeakMemoryBytes: number;
+  minimumFreeStorageBytes: number;
+  supportedCpuArchitectures: string[];
+  released: boolean;
+  status: 'unreleased' | 'released';
+  evaluation?: ModelEvaluationEvidence;
   licenseNoticePath: string;
 }
 

@@ -18,6 +18,10 @@
         "backgroundColor": "#147D73",
         "foregroundImage": "./assets/1000-ojos-icon.png"
       },
+      "allowBackup": false,
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ],
       "predictiveBackGestureEnabled": false,
       "package": "co.sierraclara.campo"
     },
@@ -42,7 +46,8 @@
           "cameraPermission": "1000 Ojos usa la cámara para registrar evidencia de campo.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-secure-store"
     ]
   }
 }

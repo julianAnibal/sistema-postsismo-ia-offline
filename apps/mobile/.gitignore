@@ -36,6 +36,5 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# generated native folders
+# iOS is not part of the currently validated scope. Android source is tracked.
 /ios
-/android

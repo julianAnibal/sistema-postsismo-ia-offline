@@ -1,37 +1,120 @@
-import { Database, Download, FileCheck2, WifiOff } from 'lucide-react-native';
-import { Alert, Platform, Share, StyleSheet, Text, View } from 'react-native';
+import {
+  CloudUpload,
+  Database,
+  Download,
+  FileCheck2,
+  KeyRound,
+  WifiOff,
+} from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { Alert, Platform, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { AppState } from '../domain/types';
+import type { AppState, OutboxAcknowledgement } from '../domain/types';
+import { buildRestrictedReducedExport } from '../domain/exportManifest';
+import { verifyEvidenceFiles } from '../storage/evidenceFiles';
+import {
+  loadSyncSettings,
+  saveSyncSettings,
+  synchronizeFieldState,
+} from '../sync/fieldSync';
 import { colors } from './theme';
 import { ActionButton, EmptyState, SectionTitle, StatusTag } from './ui';
 
-const buildExport = (state: AppState) => ({
-  schemaVersion: state.schemaVersion,
-  exportedAt: new Date().toISOString(),
-  operationName: state.operationName,
-  deviceAlias: state.deviceAlias,
-  infrastructures: state.infrastructures,
-  inspections: state.inspections,
-  mediaManifest: state.media.map(({ uri: _uri, ...item }) => ({ ...item, binaryIncluded: false })),
-  annotations: state.annotations,
-  modelAnalyses: state.modelAnalyses,
-  outbox: state.outbox,
-});
+export const SyncView = ({
+  state,
+  onAcknowledged,
+}: {
+  state: AppState;
+  onAcknowledged: (items: OutboxAcknowledgement[]) => Promise<boolean>;
+}) => {
+  const [endpoint, setEndpoint] = useState('');
+  const [token, setToken] = useState('');
+  const [message, setMessage] = useState('Los datos permanecen locales hasta confirmar el envío.');
+  const [busy, setBusy] = useState(false);
 
-export const SyncView = ({ state }: { state: AppState }) => {
-  const exportManifest = async () => {
-    const content = JSON.stringify(buildExport(state), null, 2);
-    if (Platform.OS === 'web' && typeof document !== 'undefined') {
-      const blob = new Blob([content], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = `paquete-${state.deviceAlias.toLowerCase().replace(/\s+/g, '-')}.json`;
-      anchor.click();
-      URL.revokeObjectURL(url);
+  useEffect(() => {
+    let active = true;
+    void loadSyncSettings()
+      .then((settings) => {
+        if (!active) return;
+        setEndpoint(settings.endpoint);
+        setToken(settings.token);
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setMessage(error instanceof Error ? error.message : 'No fue posible leer la configuración.');
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const sync = async () => {
+    setBusy(true);
+    try {
+      await saveSyncSettings(endpoint, token);
+      const result = await synchronizeFieldState(state);
+      const persisted = await onAcknowledged(result.acknowledgedOutboxItems);
+      setMessage(
+        persisted
+          ? `Lote ${result.batchId} confirmado por el servidor.`
+          : `El servidor confirmó ${result.batchId}, pero la cola local no pudo guardarse; el reintento es seguro.`,
+      );
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'No fue posible sincronizar.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const performExport = async () => {
+    try {
+      const verifiedMedia = await verifyEvidenceFiles(state.media);
+      const unsafeEvidence = verifiedMedia.filter((item) => item.integrity.status !== 'verified');
+      if (unsafeEvidence.length > 0) {
+        const missing = unsafeEvidence.filter((item) => item.integrity.status === 'missing').length;
+        const tampered = unsafeEvidence.length - missing;
+        Alert.alert(
+          'Exportación bloqueada por integridad',
+          `La reverificación encontró ${missing} archivo(s) faltante(s) y ${tampered} archivo(s) que no coinciden con su huella o ubicación permitida. No se generó ninguna copia.`,
+        );
+        return;
+      }
+      const content = JSON.stringify(
+        buildRestrictedReducedExport({ ...state, media: verifiedMedia }),
+        null,
+        2,
+      );
+      if (Platform.OS === 'web' && typeof document !== 'undefined') {
+        const blob = new Blob([content], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = `manifiesto-restringido-${state.deviceAlias.toLowerCase().replace(/\s+/g, '-')}.json`;
+        anchor.click();
+        URL.revokeObjectURL(url);
+        return;
+      }
+      await Share.share({ title: 'Manifiesto restringido', message: content });
+    } catch {
+      Alert.alert('Exportación interrumpida', 'No fue posible preparar o compartir la copia reducida.');
+    }
+  };
+
+  const exportManifest = () => {
+    if (Platform.OS === 'web') {
+      void performExport();
       return;
     }
-    await Share.share({ title: 'Paquete local', message: content });
+    Alert.alert(
+      'Compartir datos restringidos',
+      'La copia omite fotos, URI, coordenadas, notas, EXIF y huella del teléfono, pero conserva IDs, horas, hashes, conteos, necesidades, anotaciones y cola. Continúe solo hacia un receptor y canal autorizados.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Continuar', onPress: () => void performExport() },
+      ],
+    );
   };
 
   return (
@@ -42,10 +125,48 @@ export const SyncView = ({ state }: { state: AppState }) => {
           <WifiOff size={22} color={colors.amber} />
         </View>
         <View style={styles.connectionBody}>
-          <Text style={styles.connectionTitle}>Servidor de operación no configurado</Text>
-          <Text style={styles.connectionText}>Los registros permanecen en este dispositivo.</Text>
+          <Text accessibilityRole="alert" style={styles.connectionTitle}>{message}</Text>
+          <Text style={styles.connectionText}>Fotos y fichas se reintentan sin borrar la copia local.</Text>
         </View>
-        <StatusTag label="Solo local" tone="warning" />
+        <StatusTag
+          label={state.outbox.length > 0 ? 'Pendiente' : 'Al día'}
+          tone={state.outbox.length > 0 ? 'warning' : 'good'}
+        />
+      </View>
+
+      <View style={styles.settings}>
+        <View style={styles.label}>
+          <Database size={16} color={colors.teal} />
+          <Text style={styles.labelText}>Servidor HTTPS</Text>
+        </View>
+        <TextInput
+          accessibilityLabel="Servidor HTTPS"
+          value={endpoint}
+          onChangeText={setEndpoint}
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="https://respuesta.ejemplo.org"
+          placeholderTextColor={colors.muted}
+          style={styles.input}
+        />
+        <View style={styles.label}>
+          <KeyRound size={16} color={colors.teal} />
+          <Text style={styles.labelText}>Token operativo</Text>
+        </View>
+        <TextInput
+          accessibilityLabel="Token operativo"
+          value={token}
+          onChangeText={setToken}
+          secureTextEntry
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="Token entregado al dispositivo"
+          placeholderTextColor={colors.muted}
+          style={styles.input}
+        />
+        <Text style={styles.settingsNote}>
+          El token no se incorpora al paquete: permanece en la sesión web o en almacenamiento seguro nativo.
+        </Text>
       </View>
 
       <View style={styles.metrics}>
@@ -67,8 +188,22 @@ export const SyncView = ({ state }: { state: AppState }) => {
       </View>
 
       <View style={styles.actionLine}>
-        <ActionButton label="Exportar manifiesto JSON" icon={Download} onPress={() => void exportManifest()} />
-        <Text style={styles.actionNote}>El manifiesto omite los binarios fotográficos y conserva sus huellas.</Text>
+        <ActionButton
+          label={busy ? 'Enviando…' : 'Guardar y sincronizar'}
+          icon={CloudUpload}
+          onPress={() => void sync()}
+          disabled={busy || !endpoint.trim() || !token.trim() || state.outbox.length === 0}
+        />
+        <Text style={styles.actionNote}>
+          La app reverifica huella y tamaño antes de aceptar el lote y envía primero metadatos, después bytes.
+        </Text>
+        <ActionButton
+          label="Exportar datos restringidos"
+          icon={Download}
+          onPress={exportManifest}
+          variant="secondary"
+        />
+        <Text style={styles.actionNote}>Conserva IDs, horas, hashes, conteos, necesidades, anotaciones y cola. Requiere receptor autorizado y canal cifrado aprobado.</Text>
       </View>
 
       <Text style={styles.queueTitle}>Cola local</Text>
@@ -98,11 +233,16 @@ const styles = StyleSheet.create({
   connectionBody: { flex: 1 },
   connectionTitle: { color: colors.ink, fontSize: 14, fontWeight: '800' },
   connectionText: { color: colors.muted, fontSize: 12, marginTop: 3 },
-  metrics: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 18, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line },
-  metric: { minWidth: 150, flex: 1, minHeight: 96, padding: 14, justifyContent: 'center' },
+  settings: { paddingVertical: 16, gap: 8, borderBottomWidth: 1, borderColor: colors.line },
+  label: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  labelText: { color: colors.ink, fontSize: 12, fontWeight: '700' },
+  input: { minHeight: 44, borderWidth: 1, borderColor: colors.line, borderRadius: 6, paddingHorizontal: 11, color: colors.ink, backgroundColor: colors.surface },
+  settingsNote: { color: colors.muted, fontSize: 11, lineHeight: 16 },
+  metrics: { flexDirection: 'row', marginTop: 18, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line },
+  metric: { minWidth: 0, flex: 1, minHeight: 96, padding: 12, justifyContent: 'center' },
   metricValue: { color: colors.ink, fontSize: 23, fontWeight: '800', marginTop: 6 },
   metricLabel: { color: colors.muted, fontSize: 12, marginTop: 1 },
-  actionLine: { paddingVertical: 18, borderBottomWidth: 1, borderColor: colors.line, alignItems: 'flex-start', gap: 8 },
+  actionLine: { paddingVertical: 18, borderBottomWidth: 1, borderColor: colors.line, alignItems: 'flex-start', gap: 9 },
   actionNote: { color: colors.muted, fontSize: 11 },
   queueTitle: { color: colors.ink, fontSize: 17, fontWeight: '800', marginTop: 22, marginBottom: 10 },
   queue: { borderTopWidth: 1, borderColor: colors.line },

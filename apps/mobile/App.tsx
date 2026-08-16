@@ -1,4 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
+import NetInfo from '@react-native-community/netinfo';
 import {
   ClipboardList,
   CloudUpload,
@@ -29,6 +30,7 @@ import { StatusTag } from './src/components/ui';
 import { Infrastructure } from './src/domain/types';
 import { registerServiceWorker, useInstallPrompt } from './src/platform/pwa';
 import { useFieldStore } from './src/storage/useFieldStore';
+import { loadSyncSettings, synchronizeFieldState } from './src/sync/fieldSync';
 
 type Tab = 'work' | 'map' | 'sync' | 'more';
 
@@ -45,10 +47,33 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('work');
   const [selected, setSelected] = useState<Infrastructure | null>(null);
   const scrollRef = useRef<ScrollView>(null);
-  const { state, ready, getInspection, saveInspection, addEvidence, reset } = useFieldStore();
+  const autoSyncRef = useRef(false);
+  const {
+    state,
+    ready,
+    storageError,
+    getInspection,
+    saveInspection,
+    addEvidence,
+    acknowledgeSync,
+    reset,
+  } = useFieldStore();
   const { canInstall, install } = useInstallPrompt();
 
   useEffect(() => registerServiceWorker(), []);
+  useEffect(() => NetInfo.addEventListener((connection) => {
+    if (!ready || connection.isConnected === false || state.outbox.length === 0 || autoSyncRef.current) {
+      return;
+    }
+    autoSyncRef.current = true;
+    void loadSyncSettings()
+      .then((settings) => settings.endpoint && settings.token ? synchronizeFieldState(state) : null)
+      .then((result) => result ? acknowledgeSync(result.acknowledgedOutboxItems) : null)
+      .catch(() => undefined)
+      .finally(() => {
+        autoSyncRef.current = false;
+      });
+  }), [acknowledgeSync, ready, state]);
   useEffect(() => {
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }, [selected?.id, tab]);
@@ -89,6 +114,12 @@ export default function App() {
         </View>
       </View>
 
+      {storageError ? (
+        <View accessibilityRole="alert" style={styles.storageError}>
+          <Text style={styles.storageErrorText}>{storageError} No continúe hasta liberar espacio o corregir el acceso al almacenamiento.</Text>
+        </View>
+      ) : null}
+
       <View style={styles.shell}>
         {wide ? (
           <View style={styles.sidebar}>
@@ -104,7 +135,7 @@ export default function App() {
             </View>
             <View style={styles.sidebarFooter}>
               <Menu size={16} color={colors.muted} />
-              <Text style={styles.sidebarFooterText}>Esquema local v1</Text>
+              <Text style={styles.sidebarFooterText}>Esquema local v2</Text>
             </View>
           </View>
         ) : null}
@@ -129,7 +160,7 @@ export default function App() {
             />
           ) : null}
           {tab === 'map' ? <MapDashboard state={state} /> : null}
-          {tab === 'sync' ? <SyncView state={state} /> : null}
+          {tab === 'sync' ? <SyncView state={state} onAcknowledged={acknowledgeSync} /> : null}
           {tab === 'more' ? (
             <MoreView
               state={state}
@@ -171,6 +202,7 @@ const NavItem = ({
     <Pressable
       accessibilityRole="tab"
       accessibilityState={{ selected }}
+      aria-selected={selected}
       onPress={onPress}
       style={({ pressed }) => [
         wide ? styles.desktopNavItem : styles.mobileNavItem,
@@ -206,6 +238,14 @@ const styles = StyleSheet.create({
   headerState: { flexDirection: 'row', alignItems: 'center', gap: 9 },
   offlineState: { height: 32, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 9, backgroundColor: colors.amberSoft, borderRadius: 6 },
   offlineText: { color: colors.amber, fontSize: 11, fontWeight: '800' },
+  storageError: {
+    paddingVertical: 9,
+    paddingHorizontal: 18,
+    backgroundColor: colors.redSoft,
+    borderBottomWidth: 1,
+    borderColor: colors.red,
+  },
+  storageErrorText: { color: colors.red, fontSize: 12, fontWeight: '700' },
   shell: { flex: 1, flexDirection: 'row' },
   sidebar: { width: 224, borderRightWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, padding: 14 },
   deviceBlock: { padding: 10, paddingBottom: 18, borderBottomWidth: 1, borderColor: colors.line },

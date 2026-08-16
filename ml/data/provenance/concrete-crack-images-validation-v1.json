@@ -1,0 +1,48 @@
+{
+  "artifact": {
+    "byteSize": 49121094,
+    "path": "data/validation.zip",
+    "sha256": "c6471f0341ad169c37f52058405661ac06f495438744c67be208fc110cd218c6"
+  },
+  "dataset": {
+    "id": "mohammadnajeeb/concrete_crack_images",
+    "repositoryUrl": "https://huggingface.co/datasets/mohammadnajeeb/concrete_crack_images",
+    "revision": "897883867b6cb1059b7a4b44fe2689e6a7944386"
+  },
+  "expected": {
+    "imageCount": 8000,
+    "labels": [
+      "Negative",
+      "Positive"
+    ]
+  },
+  "license": {
+    "hfMetadata": "cc-by-4.0",
+    "spdx": "CC-BY-4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "registeredUse": {
+    "allowedClaim": "Development benchmark for known synthetic capture corruptions on concrete image patches from this source.",
+    "prohibitedClaims": [
+      "field capture-quality validation",
+      "post-earthquake performance",
+      "damage severity, structural safety, habitability, or triage",
+      "source-independent generalization"
+    ],
+    "purpose": "Train and compare a deterministic baseline and a tiny capture-quality model using synthetic corruptions only."
+  },
+  "upstream": {
+    "citation": "Ozgenel, C. F. (2019). Concrete Crack Images for Classification, version 2.",
+    "doi": "10.17632/5y9wdsg2zt.2",
+    "license": "CC-BY-4.0",
+    "published": "2019-07-23",
+    "url": "https://data.mendeley.com/datasets/5y9wdsg2zt/2"
+  },
+  "knownLimitations": [
+    "The images are concrete patches, not post-earthquake field inspection photographs.",
+    "The source has crack/no-crack labels, not human capture-quality labels.",
+    "Synthetic corruptions do not establish real-camera acceptability thresholds.",
+    "The upstream corpus was cropped from 458 high-resolution photographs, but this mirror does not expose a parent photograph identifier.",
+    "Perceptual deduplication reduces obvious leakage but cannot prove parent-scene independence."
+  ]
+}

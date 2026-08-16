@@ -20,7 +20,7 @@ for required in apps/mobile/package.json apps/mobile/app.json apps/mobile/src/do
   [[ -s "$required" ]] || { print -u2 "Falta archivo móvil requerido: $required"; exit 1; }
 done
 
-for required in ml/README.md ml/scripts/pipeline.py ml/jobs/train_sft_lora.py ml/jobs/train_vision_segmentation.py docs/training-runbook.md; do
+for required in pyproject.toml uv.lock ml/README.md ml/scripts/pipeline.py ml/jobs/train_sft_lora.py ml/jobs/train_vision_segmentation.py docs/training-runbook.md; do
   [[ -s "$required" ]] || { print -u2 "Falta archivo de entrenamiento requerido: $required"; exit 1; }
 done
 
@@ -37,6 +37,14 @@ fi
 git diff --check
 npm --prefix apps/mobile run typecheck
 npm --prefix apps/mobile test
-python3 -m unittest discover -s ml/tests -v
-python3 ml/scripts/pipeline.py demo
+npm --prefix apps/mobile run export:web
+export UV_PROJECT_ENVIRONMENT="${UV_PROJECT_ENVIRONMENT:-$root/.venv-validation}"
+uv sync --frozen --no-progress
+validation_python="$UV_PROJECT_ENVIRONMENT/bin/python"
+[[ -x "$validation_python" ]] || {
+  print -u2 "No se creo el interprete bloqueado: $validation_python"
+  exit 1
+}
+"$validation_python" -m unittest discover -s ml/tests -v
+"$validation_python" ml/scripts/pipeline.py demo
 print "Validación del harness: OK"

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-08-16T13:19:08Z",
+  "scope": "local Android test APK and emulator smoke evidence only",
+  "apk": {
+    "path": "apps/mobile/android/app/build/outputs/apk/release/1000-ojos-gemma-arm64-test.apk",
+    "sizeBytes": 51915832,
+    "sha256": "b004f09d81bb817bd321553678d49913ed0e579841f9e17239b24fa49458db58",
+    "applicationId": "co.sierraclara.campo",
+    "versionCode": 1,
+    "versionName": "1.0.0",
+    "minSdk": 24,
+    "targetSdk": 36,
+    "abis": [
+      "arm64-v8a"
+    ],
+    "internetPermission": true,
+    "liteRtLmJniBytes": 21529640,
+    "embeddedLiteRtLmModel": false,
+    "signatureSchemes": {
+      "v1": false,
+      "v2": true,
+      "v3": false,
+      "v4": false
+    },
+    "signer": {
+      "certificateDn": "CN=Android Debug, OU=Android, O=Unknown, L=Unknown, ST=Unknown, C=US",
+      "certificateSha256": "fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c",
+      "distributionReady": false
+    }
+  },
+  "model": {
+    "id": "litert-community/gemma-4-E2B-it-litert-lm",
+    "revision": "6b78abd019e61a1ca4cbe3b212d2c9ce8ff38a94",
+    "fileName": "gemma-4-E2B-it.litertlm",
+    "sizeBytes": 2588147712,
+    "sha256": "181938105e0eefd105961417e8da75903eacda102c4fce9ce90f50b97139a63c",
+    "runtime": "com.google.ai.edge.litertlm:litertlm-android:0.16.0",
+    "storage": "app-private file installed separately from the APK",
+    "downloadAndHashVerified": true
+  },
+  "emulator": {
+    "avd": "postsismo_api35_arm64",
+    "apiLevel": 35,
+    "abi": "arm64-v8a",
+    "physicalDevice": false,
+    "installResult": "Success",
+    "openClAvailable": false,
+    "selectedBackend": "CPU",
+    "cpuThreadPolicy": "min(max(availableProcessors - 1, 1), 4)",
+    "physicalDeviceBudgetGuard": "requires measured language-candidate tier; emulator is explicitly allowed for testing"
+  },
+  "inference": {
+    "question": "Que registrar si no puedo ingresar",
+    "requiredSectionsObserved": [
+      "Registros del inspector",
+      "Faltantes",
+      "Borrador sugerido"
+    ],
+    "mandatoryReviewWarningObserved": true,
+    "firstGenerationElapsedSeconds": 15.7,
+    "firstGenerationRanOffline": true,
+    "offlineGeneration": {
+      "elapsedSeconds": 15.7,
+      "activeDefaultNetworkBefore": "none",
+      "activeDefaultNetworkAfter": "none",
+      "processAliveAfter": true,
+      "fatalOrAnrObservedAfter": false
+    },
+    "screenshot": {
+      "path": "docs/evidence/android-gemma-cpu-inference.png",
+      "sha256": "61163138a3db1d6e1e11d71feefb4addde9fa25f6100728ceb49116aab646d6c"
+    }
+  },
+  "memorySnapshotsKiB": {
+    "loadedBeforeFirstGeneration": {
+      "vmHwm": 616616,
+      "vmRss": 603620,
+      "totalPss": 520894,
+      "totalRss": 604312
+    },
+    "afterOfflineFirstGeneration": {
+      "vmHwm": 1834444,
+      "vmRss": 1680264,
+      "totalPss": 1620208,
+      "totalRss": 1680704,
+      "totalSwapPss": 983
+    }
+  },
+  "validation": {
+    "gradleAssembleReleaseArm64": "passed",
+    "apkV2SignatureVerification": "passed",
+    "mobileTests": {
+      "files": 11,
+      "tests": 39,
+      "result": "passed"
+    },
+    "pythonTests": {
+      "tests": 42,
+      "result": "passed"
+    },
+    "typescriptStrict": "passed",
+    "webExport": "passed",
+    "demoModelReleased": false,
+    "gitDiffCheck": "passed",
+    "npmAudit": {
+      "moderate": 7,
+      "high": 11,
+      "critical": 0,
+      "total": 18
+    }
+  },
+  "knownConstraints": [
+    "This is an emulator observation, not a physical-phone benchmark or minimum-RAM claim.",
+    "The APK uses an Android Debug certificate and is not a distributable release.",
+    "The 2.41 GiB model is not embedded; it must be downloaded or imported and verified before connectivity is lost.",
+    "Interrupted model downloads restart because resumable download is not implemented.",
+    "The Android artifact and generated native tree are gitignored and must be transferred separately or regenerated.",
+    "No iOS build or physical-device thermal, battery, camera, sustained-run, or OOM matrix has passed.",
+    "Gemma output is assistive drafting only, never structural diagnosis, habitability, triage, or authority approval."
+  ]
+}

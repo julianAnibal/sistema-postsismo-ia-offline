@@ -76,13 +76,98 @@ export interface MediaEvidence {
   inspectionId: string;
   uri: string;
   sha256: string;
+  sizeBytes: number;
+  storage: 'app-file' | 'inline-web';
+  capturePreflight: CapturePreflight;
+  captureQuality: CaptureQualityMeasurement;
   mimeType: string;
   width: number;
   height: number;
   capturedAt: string;
   provenance: 'camera' | 'library';
   sensorMetadata: EvidenceSensorMetadata;
+  integrity: EvidenceIntegrity;
   immutable: true;
+}
+
+export type EvidenceIntegrityReason =
+  | 'not_checked'
+  | 'file_missing'
+  | 'uri_not_allowlisted'
+  | 'inline_data_invalid'
+  | 'mime_mismatch'
+  | 'sha256_mismatch'
+  | 'size_mismatch'
+  | 'read_failed';
+
+export type EvidenceIntegrity =
+  | {
+      status: 'verified';
+      checkedAt: string;
+      actualSha256: string;
+    }
+  | {
+      status: 'unverified' | 'missing' | 'tampered';
+      checkedAt: string;
+      reason: EvidenceIntegrityReason;
+      actualSha256?: string;
+    };
+
+export type CaptureQualitySignal =
+  | 'nearly_all_dark'
+  | 'nearly_all_bright'
+  | 'nearly_uniform';
+
+export interface CaptureQualityMetrics {
+  meanLuminance: number;
+  luminanceStandardDeviation: number;
+  lowClipFraction: number;
+  highClipFraction: number;
+  p01Luminance: number;
+  p99Luminance: number;
+  entropyBits: number;
+  laplacianVariance: number;
+}
+
+interface CaptureQualityMeasurementBase {
+  schemaVersion: 1;
+  checkedAt: string;
+  modelUsed: false;
+  networkRequired: false;
+  releaseStatus: 'shadow';
+  scope: 'extreme-pixel-proxy-v1';
+}
+
+export type CaptureQualityMeasurement =
+  | (CaptureQualityMeasurementBase & {
+      status: 'measured';
+      proxy: {
+        width: number;
+        height: number;
+        encodedBytes: number;
+        decodedBytes: number;
+        accountedBufferBytes: number;
+      };
+      metrics: CaptureQualityMetrics;
+      signalIds: CaptureQualitySignal[];
+      processingMilliseconds: number;
+    })
+  | (CaptureQualityMeasurementBase & {
+      status: 'unsupported' | 'error';
+      reason:
+        | 'web_memory_guard'
+        | 'native_proxy_unavailable'
+        | 'input_rejected'
+        | 'out_of_memory'
+        | 'proxy_failed'
+        | 'legacy_not_measured';
+    });
+
+export interface CapturePreflight {
+  status: 'pass' | 'review';
+  checkedAt: string;
+  scope: 'metadata-only';
+  issueIds: Array<'dimensions_unknown' | 'resolution_low' | 'aspect_extreme' | 'file_suspiciously_small'>;
 }
 
 export type SensorCaptureStatus = 'captured' | 'denied' | 'unavailable' | 'error';
@@ -116,6 +201,8 @@ export interface EvidenceSensorMetadata {
     osName: string | null;
     osVersion: string | null;
     isDevice: boolean;
+    totalMemoryBytes: number | null;
+    supportedCpuArchitectures: string[];
   };
   exif: Record<string, unknown> | null;
 }
@@ -149,8 +236,14 @@ export interface OutboxItem {
   status: 'pending';
 }
 
+export interface OutboxAcknowledgement {
+  outboxId: string;
+  entityId: string;
+  createdAt: string;
+}
+
 export interface AppState {
-  schemaVersion: 1;
+  schemaVersion: 2;
   operationName: string;
   deviceAlias: string;
   infrastructures: Infrastructure[];
@@ -166,6 +259,8 @@ export interface KnowledgeSource {
   title: string;
   section: string;
   url: string;
+  corpusStatus: 'prototype_seed' | 'approved';
+  version: string;
   text: string;
   keywords: string[];
 }

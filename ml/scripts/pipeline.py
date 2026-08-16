@@ -70,7 +70,16 @@ def demo_command(output: Path) -> None:
 
     predictions = []
     for record in splits["test"]:
-        predictions.append({"record_id": record["record_id"], "prediction": record["messages"][-1]["content"]})
+        expected = record["messages"][-1]["content"]
+        expected_output = json.loads(expected)
+        predictions.append(
+            {
+                "record_id": record["record_id"],
+                "prediction": expected,
+                "expected": expected,
+                "allowed_source_ids": expected_output["source_ids"],
+            }
+        )
     write_jsonl(output / "predictions.jsonl", predictions)
     evaluation = evaluate_predictions(output / "predictions.jsonl")
     print_json({"evaluation": evaluation})

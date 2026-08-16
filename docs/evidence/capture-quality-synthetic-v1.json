@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-08-16",
+  "overallDecision": {
+    "challengeEligible": false,
+    "fieldReady": false,
+    "modelIntegrated": false,
+    "modelReleased": false,
+    "status": "no-go"
+  },
+  "source": {
+    "artifactBytes": 49121094,
+    "artifactSha256": "c6471f0341ad169c37f52058405661ac06f495438744c67be208fc110cd218c6",
+    "huggingFaceDataset": "mohammadnajeeb/concrete_crack_images",
+    "huggingFaceRevision": "897883867b6cb1059b7a4b44fe2689e6a7944386",
+    "license": "CC-BY-4.0",
+    "upstreamDoi": "10.17632/5y9wdsg2zt.2"
+  },
+  "dataAudit": {
+    "clusterCount": 7538,
+    "exactDuplicateGroups": 237,
+    "exactDuplicateRecords": 491,
+    "maximumExactDuplicateGroupSize": 4,
+    "nearDuplicateMaximumHammingDistance": 4,
+    "parentPhotoIndependenceProven": false,
+    "perceptualClusterOverlap": {
+      "trainTest": 0,
+      "trainValidation": 0,
+      "validationTest": 0
+    },
+    "recordCount": 8000,
+    "splitCounts": {
+      "test": 1200,
+      "train": 5600,
+      "validation": 1200
+    },
+    "sourceLabelUse": "balanced nuisance stratifier only; crack/no-crack is not a model output"
+  },
+  "candidate": {
+    "architecture": "tiny-depthwise-cnn-v1",
+    "bestEpoch": 5,
+    "elapsedTrainingSeconds": 1052.1861783330096,
+    "input": "RGB 96x96 float32",
+    "modelBytes": 25542,
+    "modelParameterCount": 4588,
+    "modelSha256": "64a057ef456befa9eda477e38511fc4d3fa228d1098884e9451bb77e835d116e",
+    "onnxChecker": "passed",
+    "onnxOpset": 18,
+    "onnxParityMaximumAbsoluteError": 0.00000476837158203125,
+    "validationMacroAuroc": 0.9985012155825583
+  },
+  "firstSyntheticTest": {
+    "modelMacroAuroc": 0.9984286460792646,
+    "originalAutomatedDecision": "pass",
+    "originalReportSha256": "578a5c65d71ae0a27f5236109eaca6678834de9a6c60b06bd7482bc90a1b134a",
+    "supersedingAudit": {
+      "anyAlertOnCleanControl": {
+        "lower95": 0.36853900185896526,
+        "rate": 0.3958333333333333,
+        "upper95": 0.4237924565999377
+      },
+      "decision": "superseded-no-go",
+      "reason": "The original one-vs-rest denominator included other corruptions and hid the operational false-alert rate on untransformed controls."
+    }
+  },
+  "lockedOperatingPointV2": {
+    "challengeOpened": false,
+    "cleanControlAnyAlert": {
+      "lower95": 0.009509012635622725,
+      "rate": 0.015,
+      "upper95": 0.023586257949030145
+    },
+    "decision": "do-not-open",
+    "minimumRequiredRecallLower95": 0.9,
+    "recallLower95": {
+      "syntheticBlur": 0.9764137420509698,
+      "syntheticOcclusion": 0.9784510521095886,
+      "syntheticOverexposure": 0.5225725329202557,
+      "syntheticUnderexposure": 0.9968089993972651
+    },
+    "testSetOpened": false
+  },
+  "hostBenchmark": {
+    "architecture": "arm64",
+    "firstInferenceMilliseconds": 1.550959,
+    "host": "macOS-26.5.2-arm64",
+    "meanInferenceMilliseconds": 0.177364493,
+    "onnxRuntimeVersion": "1.24.3",
+    "p50InferenceMilliseconds": 0.124916,
+    "p95InferenceMilliseconds": 0.384834,
+    "p99InferenceMilliseconds": 0.911625,
+    "provider": "CPUExecutionProvider",
+    "runs": 1000,
+    "sessionInitializationMilliseconds": 34.465917,
+    "sessionRssIncrementBytes": 6406144,
+    "threads": 1
+  },
+  "evidenceFiles": {
+    "candidateMetadata": "private-data/capture-quality/candidate-v1-locked/candidate.json",
+    "firstTest": "private-data/capture-quality/candidate-v1-locked/TEST-REPORT.json",
+    "firstTestAudit": "private-data/capture-quality/candidate-v1-locked/TEST-REPORT-AUDIT.json",
+    "operatingPoint": "private-data/capture-quality/operating-v2/operating-point.json",
+    "operatingPointAudit": "private-data/capture-quality/operating-v2/VALIDATION-AUDIT.json",
+    "operatingPointAuditRecomputed": "private-data/capture-quality/operating-v2/VALIDATION-AUDIT-RECOMPUTED.json",
+    "provenance": "ml/data/provenance/concrete-crack-images-validation-v1.json",
+    "splitManifest": "private-data/capture-quality/split-v1.json"
+  },
+  "evidenceArtifactSha256": {
+    "candidateMetadata": "bdbd93256cbc98184488783e470176a9c85c55e8dbba97ad1a9dad5ecfe8774a",
+    "candidateTrainingConfig": "1b1ddb545a782bb5ce35bc424ba3d8e5184a1dc5e2cd51388a6dab963c144f4e",
+    "checkpoint": "7be1ca64b947bcb7dda94ec2850e7b200f335fb13c6e4d5fbd4dc805c1f60e0d",
+    "firstTest": "578a5c65d71ae0a27f5236109eaca6678834de9a6c60b06bd7482bc90a1b134a",
+    "firstTestAudit": "5b66223d44989eb5f170213a293c53d527944953eeb2768933752039c86fd45c",
+    "model": "64a057ef456befa9eda477e38511fc4d3fa228d1098884e9451bb77e835d116e",
+    "operatingPoint": "615aa9fa9228520041f3793207437ce3073bbc79fd9e8f9e352fc93277f140bf",
+    "operatingPointAuditOriginal": "34bdc487e24ee6437d8f5a70077f49caf9f0ec1c681f11892876eb1256f00c28",
+    "operatingPointAuditRecomputed": "93f136ae3a12473b6fac5e203ab84a67b14902bb045a54db5e983a519d5da5f7",
+    "operatingPointConfig": "1b013414bf69f5305b7340ac535cbfb40818c8dc9d7752b944726c2065e9875a",
+    "provenance": "b9dc1df5ab14dc78446d055b030f2acc73832bf1457c0254dc024e8d2801d33e",
+    "splitManifest": "b2516028fee79ec72f10d74d4183e616bb4b5772711a2f94f4093717ec1ebb99",
+    "uvLock": "6d8e0a30760cd499667c8a09bdae2ce44b9ecd1d0014eede5f23e4ff9e8196d8"
+  },
+  "reproducibility": {
+    "dependencyManager": "uv",
+    "frozenLockRequired": true,
+    "pythonVersion": "3.12",
+    "recomputedAuditDecision": "do-not-open",
+    "recomputedAuditFromArtifacts": true,
+    "validationCommand": "UV_PROJECT_ENVIRONMENT=.venv-validation zsh scripts/validate.sh"
+  },
+  "claimScope": {
+    "allowed": "The tiny candidate discriminates registered synthetic transformations on held-out concrete patches from one public source.",
+    "prohibited": [
+      "real-camera capture-quality performance",
+      "post-earthquake or geography-independent performance",
+      "structural damage detection, mechanism, severity, safety, habitability, or triage",
+      "phone readiness or production release"
+    ]
+  }
+}

@@ -30,7 +30,7 @@ const reviewedInspection = (
 });
 
 export const createSeedState = (): AppState => ({
-  schemaVersion: 1,
+  schemaVersion: 2,
   operationName: 'Simulacro 1000 Ojos',
   deviceAlias: 'Equipo móvil 03',
   infrastructures: [

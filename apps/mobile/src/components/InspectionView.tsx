@@ -1,4 +1,3 @@
-import * as Crypto from 'expo-crypto';
 import * as Device from 'expo-device';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -17,6 +16,7 @@ import {
   Alert,
   Image,
   Pressable,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -34,6 +34,15 @@ import {
   viewLabels,
 } from '../domain/labels';
 import {
+  assessCapturePreflight,
+  capturePreflightLabels,
+} from '../domain/capturePreflight';
+import { captureQualitySignalLabels } from '../domain/captureQuality';
+import {
+  finalizeInspectionRevision,
+  reopenInspectionAfterMutation,
+} from '../domain/inspectionRevision';
+import {
   AccessLevel,
   DamageLevel,
   EvidenceAnnotation,
@@ -48,6 +57,11 @@ import {
   ViewType,
   VisualCondition,
 } from '../domain/types';
+import {
+  EvidenceFileTooLargeError,
+  persistEvidenceAsset,
+} from '../storage/evidenceFiles';
+import { analyzeCaptureQualityProxy } from '../platform/captureQualityProxy';
 import { AssistantPanel } from './AssistantPanel';
 import { colors } from './theme';
 import {
@@ -62,6 +76,8 @@ import {
 
 const options = <T extends string>(values: T[], labels: Record<T, string>) =>
   values.map((value) => ({ value, label: labels[value] }));
+
+const formatMegabytes = (bytes: number) => `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 
 const captureLocation = async (): Promise<EvidenceSensorMetadata['location']> => {
   try {
@@ -133,12 +149,12 @@ export const InspectionView = ({
   inspection: Inspection;
   media: MediaEvidence[];
   onBack: () => void;
-  onSave: (inspection: Inspection) => void;
+  onSave: (inspection: Inspection, markReviewed: boolean) => Promise<boolean>;
   onAddEvidence: (
     inspection: Inspection,
     media: MediaEvidence,
     annotation: EvidenceAnnotation,
-  ) => void;
+  ) => Promise<boolean>;
 }) => {
   const [draft, setDraft] = useState(inspection);
   const [capturing, setCapturing] = useState(false);
@@ -146,7 +162,7 @@ export const InspectionView = ({
   useEffect(() => setDraft(inspection), [infrastructure.id]);
 
   const change = <K extends keyof Inspection>(key: K, value: Inspection[K]) =>
-    setDraft((current) => ({ ...current, [key]: value }));
+    setDraft((current) => reopenInspectionAfterMutation({ ...current, [key]: value }));
 
   const toggleNeed = (need: NeedType) =>
     change(
@@ -156,19 +172,20 @@ export const InspectionView = ({
         : [...draft.needs, need],
     );
 
-  const save = (review: boolean) => {
+  const save = async (review: boolean) => {
     if (review && (draft.access === 'unknown' || draft.observation === 'unknown')) {
       Alert.alert('Faltan datos', 'Defina el acceso y el estado de observación antes de revisar el registro.');
       return;
     }
-    const next: Inspection = {
-      ...draft,
-      status: review ? 'reviewed' : 'draft',
-      reviewedAt: review ? new Date().toISOString() : draft.reviewedAt,
-    };
+    const next = finalizeInspectionRevision(draft, review);
     setDraft(next);
-    onSave(next);
-    Alert.alert(review ? 'Registro revisado' : 'Borrador guardado', 'Los cambios quedaron en el dispositivo y en la cola local.');
+    const persisted = await onSave(next, review);
+    Alert.alert(
+      persisted ? (review ? 'Registro revisado' : 'Borrador guardado') : 'Guardado interrumpido',
+      persisted
+        ? 'Los cambios quedaron en el dispositivo y en la cola local.'
+        : 'Los cambios no pudieron confirmarse en el almacenamiento local.',
+    );
   };
 
   const capture = async (provenance: 'camera' | 'library') => {
@@ -186,37 +203,33 @@ export const InspectionView = ({
         provenance === 'camera'
           ? await ImagePicker.launchCameraAsync({
               mediaTypes: ['images'],
-              base64: true,
+              base64: Platform.OS === 'web',
               exif: true,
-              quality: 0.55,
+              quality: 0.72,
             })
           : await ImagePicker.launchImageLibraryAsync({
               mediaTypes: ['images'],
-              base64: true,
+              base64: Platform.OS === 'web',
               exif: true,
-              quality: 0.55,
+              quality: 0.72,
             });
 
       if (result.canceled) return;
       const asset = result.assets[0];
-      if (!asset.base64) {
-        Alert.alert('No se pudo guardar', 'La imagen no produjo una copia local verificable.');
-        return;
-      }
-      if (asset.base64.length > 3_500_000) {
-        Alert.alert('Imagen demasiado grande', 'Seleccione una imagen menor de 2,5 MB para este prototipo.');
-        return;
-      }
-
       const timestamp = new Date().toISOString();
       const id = `media-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
       const mimeType = asset.mimeType ?? 'image/jpeg';
-      const uri = `data:${mimeType};base64,${asset.base64}`;
-      const sha256 = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        asset.base64,
-      );
-      const [location, motion] = await Promise.all([captureLocation(), captureMotion()]);
+      const locationPromise = provenance === 'camera'
+        ? captureLocation()
+        : Promise.resolve<EvidenceSensorMetadata['location']>({ status: 'unavailable' });
+      const motionPromise = provenance === 'camera'
+        ? captureMotion()
+        : Promise.resolve<EvidenceSensorMetadata['motion']>({ status: 'unavailable' });
+      const [storedFile, location, motion] = await Promise.all([
+        persistEvidenceAsset(asset, mimeType),
+        locationPromise,
+        motionPromise,
+      ]);
       const sensorMetadata: EvidenceSensorMetadata = {
         recordedAt: new Date().toISOString(),
         location,
@@ -227,10 +240,26 @@ export const InspectionView = ({
           osName: Device.osName,
           osVersion: Device.osVersion,
           isDevice: Device.isDevice,
+          totalMemoryBytes: Device.totalMemory,
+          supportedCpuArchitectures: Device.supportedCpuArchitectures ?? [],
         },
         exif: asset.exif ?? null,
       };
-      const nextDraft = { ...draft, mediaIds: Array.from(new Set([...draft.mediaIds, id])) };
+      const capturePreflight = assessCapturePreflight(
+        asset.width,
+        asset.height,
+        storedFile.sizeBytes,
+        timestamp,
+      );
+      const captureQuality = await analyzeCaptureQualityProxy(
+        storedFile.uri,
+        asset.width,
+        asset.height,
+      );
+      const nextDraft = reopenInspectionAfterMutation({
+        ...draft,
+        mediaIds: Array.from(new Set([...draft.mediaIds, id])),
+      });
       const annotation: EvidenceAnnotation = {
         id: `annotation-${id}`,
         mediaId: id,
@@ -242,24 +271,48 @@ export const InspectionView = ({
         createdAt: timestamp,
       };
       setDraft(nextDraft);
-      onAddEvidence(
+      const persisted = await onAddEvidence(
         nextDraft,
         {
           id,
           inspectionId: draft.id,
-          uri,
-          sha256,
+          uri: storedFile.uri,
+          sha256: storedFile.sha256,
+          sizeBytes: storedFile.sizeBytes,
+          storage: storedFile.storage,
+          capturePreflight,
+          captureQuality,
           mimeType,
           width: asset.width,
           height: asset.height,
           capturedAt: timestamp,
           provenance,
           sensorMetadata,
+          integrity: storedFile.integrity,
           immutable: true,
         },
         annotation,
       );
-    } catch {
+      if (!persisted) throw new Error('evidence manifest persistence failed');
+      if (capturePreflight.status === 'review') {
+        Alert.alert(
+          'Foto guardada con observaciones',
+          `${capturePreflight.issueIds.map((issue) => capturePreflightLabels[issue]).join('; ')}. Este prechequeo no evalúa enfoque, iluminación ni contenido. Repita la captura solo si es seguro.`,
+        );
+      } else if (captureQuality.status === 'measured' && captureQuality.signalIds.length > 0) {
+        Alert.alert(
+          'Foto guardada · medición experimental',
+          `${captureQuality.signalIds.map((signal) => captureQualitySignalLabels[signal]).join('; ')}. Esta medición extrema usa un proxy pequeño, no evalúa daño ni confirma calidad. Revise la vista y repita solo si es seguro.`,
+        );
+      }
+    } catch (error) {
+      if (error instanceof EvidenceFileTooLargeError) {
+        Alert.alert(
+          'Imagen demasiado grande',
+          `La imagen ocupa ${formatMegabytes(error.actualBytes)}. El límite de esta modalidad es ${formatMegabytes(error.maximumBytes)}.`,
+        );
+        return;
+      }
       Alert.alert('Captura interrumpida', 'No fue posible incorporar la imagen en este dispositivo.');
     } finally {
       setCapturing(false);
@@ -374,8 +427,8 @@ export const InspectionView = ({
         <SectionTitle title="3. Evidencia fotográfica" detail={`${media.length} archivos`} />
         <View style={styles.modelRow}>
           <View>
-            <Text style={styles.modelTitle}>Visión local</Text>
-            <Text style={styles.modelText}>Modelo no instalado. Se conserva únicamente la clasificación manual.</Text>
+            <Text style={styles.modelTitle}>Calidad de captura local</Text>
+            <Text style={styles.modelText}>Sin modelo. Un proxy pequeño registra métricas y señales extremas en shadow mode; no analiza daño.</Text>
           </View>
           <StatusTag label="Sin modelo" tone="neutral" />
         </View>
@@ -400,6 +453,38 @@ export const InspectionView = ({
               <View key={item.id} style={styles.photoItem}>
                 <Image source={{ uri: item.uri }} style={styles.photo} />
                 <Text numberOfLines={1} style={styles.hash}>SHA-256 {item.sha256.slice(0, 16)}…</Text>
+                <Text style={styles.photoTime}>
+                  Integridad:{' '}
+                  {item.integrity.status === 'verified'
+                    ? 'verificada localmente'
+                    : item.integrity.status === 'missing'
+                      ? 'archivo faltante'
+                      : item.integrity.status === 'tampered'
+                        ? 'no coincide con su huella'
+                        : 'pendiente de verificar'}
+                </Text>
+                <Text style={styles.photoTime}>
+                  {formatMegabytes(item.sizeBytes)} · {item.storage === 'app-file' ? 'archivo de app' : 'copia web'}
+                </Text>
+                <Text style={styles.photoTime}>
+                  Prechequeo: {item.capturePreflight.status === 'pass' ? 'metadatos suficientes' : 'revisar captura'}
+                </Text>
+                <Text style={styles.photoTime}>
+                  Proxy local:{' '}
+                  {item.captureQuality.status === 'measured'
+                    ? item.captureQuality.signalIds.length
+                      ? item.captureQuality.signalIds.map((signal) => captureQualitySignalLabels[signal]).join('; ')
+                      : 'medido sin señal extrema · no equivale a calidad aprobada'
+                    : item.captureQuality.reason === 'web_memory_guard'
+                      ? 'no ejecutado en web por límite de memoria'
+                      : item.captureQuality.reason === 'native_proxy_unavailable'
+                        ? 'módulo nativo no disponible en esta plataforma'
+                        : item.captureQuality.reason === 'out_of_memory'
+                          ? 'detenido por memoria insuficiente'
+                          : item.captureQuality.reason === 'input_rejected'
+                            ? 'entrada rechazada por límites de seguridad'
+                            : 'medición no disponible'}
+                </Text>
                 <Text style={styles.photoTime}>{new Date(item.capturedAt).toLocaleString('es-CO')}</Text>
                 <Text style={styles.photoTime}>
                   {item.sensorMetadata.location.status === 'captured'
@@ -444,7 +529,14 @@ export const InspectionView = ({
               const checked = draft.needs.includes(need);
               const Icon = checked ? CheckSquare : Square;
               return (
-                <Pressable key={need} onPress={() => toggleNeed(need)} style={styles.needItem} accessibilityRole="checkbox" accessibilityState={{ checked }}>
+                <Pressable
+                  key={need}
+                  onPress={() => toggleNeed(need)}
+                  style={styles.needItem}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked }}
+                  aria-checked={checked}
+                >
                   <Icon size={20} color={checked ? colors.teal : colors.muted} />
                   <Text style={styles.needText}>{needLabels[need]}</Text>
                 </Pressable>
@@ -464,17 +556,22 @@ export const InspectionView = ({
       </View>
 
       <View style={styles.section}>
-        <AssistantPanel onUseDraft={useAssistantDraft} />
+        <AssistantPanel
+          infrastructure={infrastructure}
+          inspection={draft}
+          mediaCount={media.length}
+          onUseDraft={useAssistantDraft}
+        />
       </View>
 
       <View style={styles.section}>
-        <SectionTitle title="Borrador de informe rápido" detail="Referencia semántica ATC-20" />
+        <SectionTitle title="Borrador de informe rápido" detail="Plantilla local · revisión humana" />
         <View style={styles.report}>
           <ReportRow label="Identificación" value={`${infrastructure.code} · ${infrastructure.name}`} />
           <ReportRow label="Uso" value={infrastructureLabels[infrastructure.type]} />
           <ReportRow label="Acceso" value={accessLabels[draft.access]} />
           <ReportRow label="Observación" value={observationLabels[draft.observation]} />
-          <ReportRow label="Daño preliminar" value={damageLabels[draft.damageLevel]} />
+          <ReportRow label="Nivel manual" value={damageLabels[draft.damageLevel]} />
           <ReportRow label="Evidencias" value={String(media.length)} />
           <ReportRow label="Personas con apoyo" value={`${draft.peopleNeedingSupport}/${draft.estimatedOccupants}`} />
         </View>

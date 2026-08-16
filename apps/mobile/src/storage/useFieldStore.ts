@@ -1,31 +1,30 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { createDraftInspection, createSeedState } from '../data/seed';
 import {
+  finalizeInspectionRevision,
+  reopenInspectionAfterMutation,
+} from '../domain/inspectionRevision';
+import {
   AppState,
   EvidenceAnnotation,
-  EvidenceSensorMetadata,
   Inspection,
   MediaEvidence,
+  OutboxAcknowledgement,
   OutboxItem,
 } from '../domain/types';
+import {
+  clearEvidenceFiles,
+  deleteAllowlistedEvidenceFiles,
+  EvidenceIntegrityError,
+  prepareEvidenceFilesForLoad,
+} from './evidenceFiles';
+import { migrateFieldState } from './migrations';
+import { removeAcknowledgedOutboxItems } from './outbox';
 
-const STORAGE_KEY = '@sierra-clara/field-state/v1';
-
-const unavailableSensorMetadata = (recordedAt: string): EvidenceSensorMetadata => ({
-  recordedAt,
-  location: { status: 'unavailable' },
-  motion: { status: 'unavailable' },
-  device: {
-    manufacturer: null,
-    modelName: null,
-    osName: null,
-    osVersion: null,
-    isDevice: false,
-  },
-  exif: null,
-});
+const STORAGE_KEY = '@sierra-clara/field-state/v2';
+const LEGACY_STORAGE_KEY = '@sierra-clara/field-state/v1';
 
 const upsert = <T extends { id: string }>(items: T[], item: T) => [
   ...items.filter((candidate) => candidate.id !== item.id),
@@ -52,35 +51,111 @@ const persist = (state: AppState) => AsyncStorage.setItem(STORAGE_KEY, JSON.stri
 
 export const useFieldStore = () => {
   const [state, setState] = useState<AppState>(createSeedState());
+  const stateRef = useRef(state);
   const [ready, setReady] = useState(false);
+  const [storageError, setStorageError] = useState<string | null>(null);
+  const writeQueue = useRef<Promise<void>>(Promise.resolve());
+
+  const enqueuePersist = useCallback(
+    (next: AppState, afterSuccess?: () => Promise<string | null>): Promise<boolean> => {
+      const operation = writeQueue.current
+        .catch(() => undefined)
+        .then(async () => {
+          try {
+            await persist(next);
+            setStorageError(null);
+            if (afterSuccess) {
+              try {
+                const warning = await afterSuccess();
+                if (warning) setStorageError(warning);
+              } catch {
+                setStorageError('Los datos se guardaron, pero quedó almacenamiento residual que no pudo eliminarse.');
+              }
+            }
+            return true;
+          } catch {
+            setStorageError('No fue posible guardar los cambios en el almacenamiento local.');
+            return false;
+          }
+        });
+      writeQueue.current = operation.then(() => undefined);
+      return operation;
+    },
+    [],
+  );
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY)
-      .then((stored) => {
+    let active = true;
+    const load = async () => {
+      try {
+        const current = await AsyncStorage.getItem(STORAGE_KEY);
+        const legacy = current ? null : await AsyncStorage.getItem(LEGACY_STORAGE_KEY);
+        const stored = current ?? legacy;
         if (!stored) return;
-        const parsed = JSON.parse(stored) as AppState;
-        if (parsed.schemaVersion === 1) {
-          setState({
-            ...parsed,
-            media: (parsed.media ?? []).map((item) => ({
-              ...item,
-              sensorMetadata: item.sensorMetadata ?? unavailableSensorMetadata(item.capturedAt),
-            })),
-            modelAnalyses: parsed.modelAnalyses ?? [],
-          });
+        const parsed: unknown = JSON.parse(stored);
+        const sourceSchemaVersion =
+          typeof parsed === 'object' && parsed !== null && 'schemaVersion' in parsed
+            ? Number(parsed.schemaVersion)
+            : NaN;
+        const migrated = migrateFieldState(parsed);
+        if (!migrated) {
+          if (active) setStorageError('Los datos locales existentes no superaron la validación y no se cargaron.');
+          return;
         }
-      })
-      .catch(() => undefined)
-      .finally(() => setReady(true));
+        const prepared = await prepareEvidenceFilesForLoad(migrated.media, {
+          rehashLegacy: sourceSchemaVersion === 1,
+        });
+        const next = { ...migrated, media: prepared.media };
+        try {
+          await persist(next);
+        } catch (error) {
+          deleteAllowlistedEvidenceFiles(prepared.createdFileUris);
+          throw error;
+        }
+
+        let cleanupWarning = false;
+        if (legacy) {
+          try {
+            await AsyncStorage.removeItem(LEGACY_STORAGE_KEY);
+          } catch {
+            cleanupWarning = true;
+          }
+        }
+        if (deleteAllowlistedEvidenceFiles(prepared.obsoleteFileUris).length > 0) {
+          cleanupWarning = true;
+        }
+        if (active) {
+          stateRef.current = next;
+          setState(next);
+          if (cleanupWarning) {
+            setStorageError('La migración se guardó, pero no fue posible eliminar una copia local antigua.');
+          }
+        }
+      } catch (error) {
+        // Corrupt or unavailable local state falls back to the synthetic seed.
+        if (active) {
+          setStorageError(
+            error instanceof EvidenceIntegrityError
+              ? 'La evidencia local no superó la verificación y el estado no fue migrado.'
+              : 'No fue posible leer o migrar el almacenamiento local.',
+          );
+        }
+      } finally {
+        if (active) setReady(true);
+      }
+    };
+    void load();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const commit = useCallback((mutate: (current: AppState) => AppState) => {
-    setState((current) => {
-      const next = mutate(current);
-      void persist(next);
-      return next;
-    });
-  }, []);
+    const next = mutate(stateRef.current);
+    stateRef.current = next;
+    setState(next);
+    return enqueuePersist(next);
+  }, [enqueuePersist]);
 
   const getInspection = useCallback(
     (infrastructureId: string) =>
@@ -90,9 +165,12 @@ export const useFieldStore = () => {
   );
 
   const saveInspection = useCallback(
-    (inspection: Inspection) => {
-      const updated: Inspection = { ...inspection, updatedAt: new Date().toISOString() };
-      commit((current) => ({
+    (inspection: Inspection, markReviewed: boolean) => {
+      const updated: Inspection = {
+        ...finalizeInspectionRevision(inspection, markReviewed),
+        updatedAt: new Date().toISOString(),
+      };
+      return commit((current) => ({
         ...current,
         inspections: upsert(current.inspections, updated),
         outbox: queue(current.outbox, 'inspection', updated.id),
@@ -104,11 +182,11 @@ export const useFieldStore = () => {
   const addEvidence = useCallback(
     (inspection: Inspection, media: MediaEvidence, annotation: EvidenceAnnotation) => {
       const updatedInspection: Inspection = {
-        ...inspection,
+        ...reopenInspectionAfterMutation(inspection),
         mediaIds: Array.from(new Set([...inspection.mediaIds, media.id])),
         updatedAt: new Date().toISOString(),
       };
-      commit((current) => ({
+      return commit((current) => ({
         ...current,
         inspections: upsert(current.inspections, updatedInspection),
         media: upsert(current.media, media),
@@ -123,11 +201,45 @@ export const useFieldStore = () => {
     [commit],
   );
 
+  const acknowledgeSync = useCallback(
+    (acknowledgements: OutboxAcknowledgement[]) =>
+      commit((current) => ({
+        ...current,
+        outbox: removeAcknowledgedOutboxItems(current.outbox, acknowledgements),
+      })),
+    [commit],
+  );
+
   const reset = useCallback(() => {
     const seed = createSeedState();
-    setState(seed);
-    void persist(seed);
-  }, []);
+    return enqueuePersist(seed, async () => {
+      stateRef.current = seed;
+      setState(seed);
+      let residual = false;
+      try {
+        await AsyncStorage.removeItem(LEGACY_STORAGE_KEY);
+      } catch {
+        residual = true;
+      }
+      try {
+        clearEvidenceFiles();
+      } catch {
+        residual = true;
+      }
+      return residual
+        ? 'El estado se restableció, pero quedaron archivos o datos heredados que no pudieron eliminarse.'
+        : null;
+    });
+  }, [enqueuePersist]);
 
-  return { state, ready, getInspection, saveInspection, addEvidence, reset };
+  return {
+    state,
+    ready,
+    storageError,
+    getInspection,
+    saveInspection,
+    addEvidence,
+    acknowledgeSync,
+    reset,
+  };
 };

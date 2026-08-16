@@ -105,6 +105,7 @@ export const ChoiceGroup = <T extends string>({
           key={option.value}
           accessibilityRole="radio"
           accessibilityState={{ checked: selected }}
+          aria-checked={selected}
           onPress={() => onChange(option.value)}
           style={({ pressed }) => [
             styles.choice,
