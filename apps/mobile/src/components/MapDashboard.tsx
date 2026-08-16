@@ -1,7 +1,6 @@
 import { Layers3, MapPinned } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Polygon, Text as SvgText } from 'react-native-svg';
 
 import { computeGridMetrics } from '../domain/analytics';
 import { AppState, MapLayer } from '../domain/types';
@@ -24,12 +23,6 @@ const colorFor = (layer: MapLayer, value: number | null) => {
   if (layer === 'pending_ai') return strong ? '#B96B09' : medium ? '#E0A54C' : '#F3D69C';
   return strong ? '#315A8A' : medium ? '#7C9FC5' : '#BFD0E2';
 };
-
-const hexPoints = (cx: number, cy: number, radius: number) =>
-  Array.from({ length: 6 }, (_, index) => {
-    const angle = (Math.PI / 180) * (60 * index - 30);
-    return `${cx + radius * Math.cos(angle)},${cy + radius * Math.sin(angle)}`;
-  }).join(' ');
 
 export const MapDashboard = ({ state }: { state: AppState }) => {
   const [layer, setLayer] = useState<MapLayer>('coverage');
@@ -61,58 +54,33 @@ export const MapDashboard = ({ state }: { state: AppState }) => {
       />
 
       <View style={styles.mapBand}>
-        <Svg width="100%" height="100%" viewBox="0 0 720 390">
+        <View style={styles.mapGrid}>
           {metrics.map((metric) => {
-            const cx = 145 + metric.x * 185 + (metric.y % 2) * 92;
-            const cy = 112 + metric.y * 150;
             const selectedNow = metric.cellId === selectedCell;
+            const darkText = metric.value === null || metric.value < 0.4;
             return (
-              <Polygon
+              <Pressable
                 key={metric.cellId}
-                points={hexPoints(cx, cy, 91)}
-                fill={colorFor(layer, metric.value)}
-                stroke={selectedNow ? colors.ink : colors.white}
-                strokeWidth={selectedNow ? 5 : 3}
-              />
-            );
-          })}
-          {metrics.map((metric) => {
-            const cx = 145 + metric.x * 185 + (metric.y % 2) * 92;
-            const cy = 112 + metric.y * 150;
-            const darkText = metric.value === null || metric.value < 0.4;
-            return (
-              <SvgText
-                key={`label-${metric.cellId}`}
-                x={cx}
-                y={cy - 7}
-                textAnchor="middle"
-                fontSize="22"
-                fontWeight="700"
-                fill={darkText ? colors.ink : colors.white}
+                accessibilityRole="button"
+                accessibilityLabel={`Celda ${metric.cellId}, ${metric.label}`}
+                onPress={() => setSelectedCell(metric.cellId)}
+                style={({ pressed }) => [
+                  styles.mapCell,
+                  { backgroundColor: colorFor(layer, metric.value) },
+                  selectedNow && styles.mapCellSelected,
+                  pressed && styles.mapCellPressed,
+                ]}
               >
-                {metric.cellId}
-              </SvgText>
+                <Text style={[styles.mapCellName, { color: darkText ? colors.ink : colors.white }]}>
+                  {metric.cellId}
+                </Text>
+                <Text style={[styles.mapCellValue, { color: darkText ? colors.dark : colors.white }]}>
+                  {metric.denominator === 0 ? 'sin datos' : `${Math.round((metric.value ?? 0) * 100)}%`}
+                </Text>
+              </Pressable>
             );
           })}
-          {metrics.map((metric) => {
-            const cx = 145 + metric.x * 185 + (metric.y % 2) * 92;
-            const cy = 112 + metric.y * 150;
-            const darkText = metric.value === null || metric.value < 0.4;
-            return (
-              <SvgText
-                key={`value-${metric.cellId}`}
-                x={cx}
-                y={cy + 22}
-                textAnchor="middle"
-                fontSize="15"
-                fontWeight="600"
-                fill={darkText ? colors.dark : colors.white}
-              >
-                {metric.denominator === 0 ? 'sin datos' : `${Math.round((metric.value ?? 0) * 100)}%`}
-              </SvgText>
-            );
-          })}
-        </Svg>
+        </View>
       </View>
 
       {selected ? (
@@ -135,6 +103,8 @@ export const MapDashboard = ({ state }: { state: AppState }) => {
         {metrics.map((metric) => (
           <Pressable
             key={metric.cellId}
+            accessibilityRole="button"
+            accessibilityLabel={`Seleccionar celda ${metric.cellId}: ${metric.label}`}
             onPress={() => setSelectedCell(metric.cellId)}
             style={[styles.cellRow, selectedCell === metric.cellId && styles.cellRowSelected]}
           >
@@ -169,12 +139,41 @@ const styles = StyleSheet.create({
   headingText: { color: colors.muted, fontSize: 12, marginTop: 2 },
   mapBand: {
     width: '100%',
-    aspectRatio: 1.75,
-    minHeight: 300,
-    maxHeight: 520,
     marginTop: 18,
     backgroundColor: '#EDF1EF',
-    overflow: 'hidden',
+    padding: 18,
+  },
+  mapGrid: {
+    width: '100%',
+    maxWidth: 720,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  mapCell: {
+    width: '31%',
+    minWidth: 92,
+    aspectRatio: 1.25,
+    borderWidth: 3,
+    borderColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mapCellSelected: {
+    borderColor: colors.ink,
+  },
+  mapCellPressed: {
+    opacity: 0.78,
+  },
+  mapCellName: {
+    fontSize: 21,
+    fontWeight: '800',
+  },
+  mapCellValue: {
+    marginTop: 4,
+    fontSize: 13,
+    fontWeight: '700',
   },
   selectedBand: {
     minHeight: 80,
