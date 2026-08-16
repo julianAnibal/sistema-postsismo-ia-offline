@@ -1,0 +1,11 @@
+.expo/
+.playwright-cli/
+.vercel/
+android/
+dist/
+node_modules/
+output/
+modules/*/android/build/
+*.apk
+*.aab
+*.litertlm

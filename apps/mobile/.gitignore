@@ -38,3 +38,4 @@ yarn-error.*
 
 # iOS is not part of the currently validated scope. Android source is tracked.
 /ios
+.vercel
