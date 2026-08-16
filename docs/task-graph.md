@@ -40,3 +40,12 @@ flowchart TD
 Sólo `Todo`, `In Progress` e `In Review` son estados activos para el harness.
 Las tareas de implementación permanecen en `Backlog` hasta que una persona
 confirme que sus dependencias y aprobaciones están completas.
+
+## Frentes
+
+- **F1 Gobierno, datos y campo:** DNA-58, 60, 62, 63, 66 y 80.
+- **F2 Móvil, offline e IA:** DNA-57, 61, 65, 67, 68, 69, 70, 71 y 74.
+- **F3 Plataforma, web e informes:** DNA-59, 64, 72, 73, 75, 76, 77, 78 y 79.
+
+La asignación, las revisiones cruzadas y el contrato de ramas/PR están en
+[`team-workflow.md`](team-workflow.md).

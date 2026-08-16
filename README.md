@@ -73,6 +73,7 @@ Linear.
 
 - [Resumen del producto](docs/product-brief.md)
 - [Grafo de tareas](docs/task-graph.md)
+- [Trabajo coordinado para tres personas](docs/team-workflow.md)
 - [Runbook](docs/runbook.md)
 - [Prueba de funcionamiento](docs/proof-of-life.md)
 - [Registro de decisiones](docs/decisions/README.md)

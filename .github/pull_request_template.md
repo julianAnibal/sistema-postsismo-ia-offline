@@ -1,63 +1,39 @@
-## Summary
+## Linear
 
-<!-- Brief description of what this PR does -->
+- Issue: DNA-XX
+- URL: https://linear.app/dnaart/issue/DNA-XX/
+- Front: F1 Gobierno, datos y campo / F2 Movil e IA / F3 Plataforma y web
 
-## Changes
+## Resultado
 
-<!-- List the key changes made -->
+<!-- Describe the reviewable outcome, not the activity performed. -->
 
-- 
-- 
-- 
+## Cambios
 
-## Evidence
+- <!-- Change -->
 
-<!-- 
-For substantive changes, include evidence showing the change works as intended:
-- Behavior changes: test output showing before/after
-- Performance changes: benchmarks or timing data
-- New features: usage examples or screenshots
-- Bug fixes: reproduction case and verification
-- UI changes: screenshots or video
-- CLI changes: exact commands and output
--->
+## Validacion
 
-### Test output
-
-```
-<!-- Paste relevant test output here -->
+```text
+./scripts/validate.sh
 ```
 
-### Verification
+<!-- Add ticket-specific tests, screenshots, reports or measurements. -->
 
-<!-- Describe how you verified this change works -->
+## Seguridad y datos
 
-## Checklist
+- [ ] No incluye secretos, datos personales, fotos privadas ni datos reales no autorizados.
+- [ ] Mantiene separadas sugerencia IA, observacion, conclusion profesional y aprobacion oficial.
+- [ ] No debilita dependencias, revisiones humanas ni reglas de seguridad.
+- [ ] Las migraciones, contratos y artefactos versionados son compatibles o documentan el cambio.
 
-- [ ] Tests pass (`cargo test`)
-- [ ] Code is formatted (`cargo fmt`)
-- [ ] Clippy is clean (`cargo clippy`)
-- [ ] Documentation updated (if behavior changed)
-- [ ] `AGENTS.md` updated (if repo knowledge changed)
-- [ ] Evidence section filled out (for substantive changes)
+## Revision cruzada
 
-## Type of change
+- [ ] Revisor de un frente diferente solicitado.
+- [ ] Criterios de aceptacion de Linear verificados.
+- [ ] Documentacion actualizada cuando cambia un contrato o una decision.
+- [ ] Riesgos residuales y trabajo posterior registrados.
 
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Performance improvement
-- [ ] Refactoring
-- [ ] Documentation
-- [ ] Other: <!-- describe -->
+## Evidencia
 
-## Breaking changes
-
-<!-- List any breaking changes or "None" -->
-
-## Related issues
-
-<!-- Link to related Linear issues or GitHub issues -->
-
-## Additional notes
-
-<!-- Any other context reviewers should know -->
+<!-- Link test output, screenshots, reports, model cards or ADRs. -->

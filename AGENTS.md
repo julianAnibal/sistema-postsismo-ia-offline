@@ -32,6 +32,7 @@ system, or source of authority.
 │   ├── decisions/           # ADRs proposed by Decision tickets
 │   ├── product-brief.md      # architecture and safety summary
 │   ├── runbook.md            # operator procedures
+│   ├── team-workflow.md       # three-person ownership and Git contract
 │   └── task-graph.md         # milestones and dependency map
 ├── scripts/                 # safe local launch and validation wrappers
 ├── AGENTS.md
@@ -52,6 +53,8 @@ Application packages will be added only by approved implementation tickets.
 - Use synthetic test fixtures with impossible names and coordinates.
 - Add comments only where behavior is not self-evident.
 - Keep changes scoped to the current Linear issue.
+- Use `work/DNA-XX-short-title` branches and include `DNA-XX` in commits and PRs.
+- Require review from a different front as defined in `docs/team-workflow.md`.
 
 ## Safety and privacy
 

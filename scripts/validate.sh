@@ -4,7 +4,7 @@ set -euo pipefail
 root="${0:A:h:h}"
 cd "$root"
 
-for required in README.md AGENTS.md WORKFLOW.md config.yaml docs/product-brief.md docs/task-graph.md docs/runbook.md; do
+for required in README.md AGENTS.md WORKFLOW.md config.yaml docs/product-brief.md docs/task-graph.md docs/team-workflow.md docs/runbook.md .github/workflows/validate.yml; do
   [[ -s "$required" ]] || { print -u2 "Falta archivo requerido: $required"; exit 1; }
 done
 
@@ -13,6 +13,8 @@ rg -q 'harness: codex_app_server' WORKFLOW.md
 rg -q 'github.com/julianAnibal/sistema-postsismo-ia-offline.git' WORKFLOW.md
 rg -q 'OPENSYMPHONY_HARNESS=.*codex_app_server' scripts/run.sh
 rg -q '^\.env$' .gitignore
+rg -q 'work/DNA-XX' docs/team-workflow.md
+rg -q 'Issue: DNA-XX' .github/pull_request_template.md
 
 if rg -n '/Users/[^/]+/' --glob '!docs/proof-of-life.md' --glob '!scripts/validate.sh' .; then
   print -u2 "Se encontro una ruta personal fuera del informe historico."
