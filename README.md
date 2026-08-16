@@ -1,4 +1,4 @@
-# OpenSymphony Harness: Sistema Postsismo IA Offline
+# 1000Ojos: Sistema Postsismo IA Offline
 
 Harness local para convertir el proyecto de Linear en decisiones revisables y
 tareas de implementación aisladas. Usa OpenSymphony con el Codex app-server y
