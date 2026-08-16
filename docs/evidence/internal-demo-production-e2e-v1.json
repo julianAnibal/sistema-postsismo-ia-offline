@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-08-16T15:10:00Z",
+  "environment": "production",
+  "frontendUrl": "https://1000-ojos-postsismo.vercel.app",
+  "backendUrl": "https://backend-production-0d88.up.railway.app",
+  "syntheticRecord": {
+    "operationId": "internal-demo-20260816-v1",
+    "batchId": "internal-demo-20260816-v1-batch",
+    "inspectionId": "internal-demo-20260816-v1-inspection",
+    "mediaId": "internal-demo-20260816-v1-media",
+    "infrastructureName": "Edificio Sintético Aurora",
+    "coordinatesAreSynthetic": true
+  },
+  "checks": {
+    "healthBeforeRestart": "ok",
+    "initialSync": "accepted",
+    "identicalBatchReplay": "already_received",
+    "conflictingBatchReplayHttpStatus": 409,
+    "initialMediaUpload": "stored",
+    "identicalMediaReplay": "already_stored",
+    "observationReadback": true,
+    "humanReviewDecision": "approved",
+    "backendRestarted": true,
+    "healthAfterRestart": "ok",
+    "recordPersistedAfterRestart": true,
+    "reviewPersistedAfterRestart": true,
+    "mediaPersistedAfterRestart": true
+  },
+  "mediaIntegrity": {
+    "bytes": 224388,
+    "declaredSha256": "bb10c4fa95009c1216d0e45de3637999735b8cf221297d3e33469e4d5b5897c7",
+    "downloadedSha256": "bb10c4fa95009c1216d0e45de3637999735b8cf221297d3e33469e4d5b5897c7",
+    "match": true
+  },
+  "screenshots": [
+    "internal-demo-live-pwa.png",
+    "internal-demo-review-console.png"
+  ],
+  "scope": "Synthetic internal demonstration only.",
+  "limitations": [
+    "This is not structural diagnosis, habitability determination, or official triage.",
+    "Gemma web inference was previously proven offline, but the live Vercel browser profile was not reprovisioned during this check because the workstation had only 2.6 GB free for a 2.0 GB model.",
+    "No iOS or minimum-memory physical Android claim is made."
+  ]
+}
