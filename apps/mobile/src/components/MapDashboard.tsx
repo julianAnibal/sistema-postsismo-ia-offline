@@ -73,7 +73,6 @@ export const MapDashboard = ({ state }: { state: AppState }) => {
                 fill={colorFor(layer, metric.value)}
                 stroke={selectedNow ? colors.ink : colors.white}
                 strokeWidth={selectedNow ? 5 : 3}
-                onPress={() => setSelectedCell(metric.cellId)}
               />
             );
           })}
@@ -90,7 +89,6 @@ export const MapDashboard = ({ state }: { state: AppState }) => {
                 fontSize="22"
                 fontWeight="700"
                 fill={darkText ? colors.ink : colors.white}
-                onPress={() => setSelectedCell(metric.cellId)}
               >
                 {metric.cellId}
               </SvgText>
@@ -109,7 +107,6 @@ export const MapDashboard = ({ state }: { state: AppState }) => {
                 fontSize="15"
                 fontWeight="600"
                 fill={darkText ? colors.dark : colors.white}
-                onPress={() => setSelectedCell(metric.cellId)}
               >
                 {metric.denominator === 0 ? 'sin datos' : `${Math.round((metric.value ?? 0) * 100)}%`}
               </SvgText>
