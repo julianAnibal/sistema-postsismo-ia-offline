@@ -85,6 +85,11 @@ export interface MediaEvidence {
   immutable: true;
 }
 
+export interface SyncSettings {
+  endpoint: string;
+  configured: boolean;
+}
+
 export type SensorCaptureStatus = 'captured' | 'denied' | 'unavailable' | 'error';
 
 export interface EvidenceSensorMetadata {

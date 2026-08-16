@@ -10,6 +10,14 @@ npm ci
 npm run web
 ```
 
+## Sincronización de campo
+
+En la vista **Envíos**, configure la URL HTTPS de la web operativa y el token entregado al dispositivo. En iOS y Android la credencial queda en Keychain/Keystore; en la versión web solo vive durante la sesión del navegador.
+
+La aplicación reintenta al recuperar conectividad. Primero sube cada fotografía con su SHA-256 y después envía el lote estructurado. La cola local solo se elimina cuando el servidor confirma el lote completo. No incluya `SUPABASE_SERVICE_ROLE_KEY` ni otra llave de infraestructura en esta aplicación.
+
+`eas.json` define instaladores internos (`preview`, APK) y de tiendas (`production`). La generación requiere iniciar sesión en una cuenta Expo/EAS autorizada.
+
 Abra `http://localhost:8081` o el puerto mostrado por Expo. Para producir la
 PWA:
 

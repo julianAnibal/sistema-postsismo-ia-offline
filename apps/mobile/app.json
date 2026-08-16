@@ -9,6 +9,7 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "co.sierraclara.campo",
       "infoPlist": {
         "NSMotionUsageDescription": "1000 Ojos registra la orientación del teléfono junto con la evidencia fotográfica."
       }
@@ -42,7 +43,8 @@
           "cameraPermission": "1000 Ojos usa la cámara para registrar evidencia de campo.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-secure-store"
     ]
   }
 }

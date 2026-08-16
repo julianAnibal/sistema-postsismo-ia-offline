@@ -129,5 +129,13 @@ export const useFieldStore = () => {
     void persist(seed);
   }, []);
 
-  return { state, ready, getInspection, saveInspection, addEvidence, reset };
+  const acknowledgeSync = useCallback((entityIds: string[]) => {
+    const acknowledged = new Set(entityIds);
+    commit((current) => ({
+      ...current,
+      outbox: current.outbox.filter((item) => !acknowledged.has(item.entityId)),
+    }));
+  }, [commit]);
+
+  return { state, ready, getInspection, saveInspection, addEvidence, acknowledgeSync, reset };
 };
