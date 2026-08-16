@@ -1,4 +1,4 @@
-# 1000 Ojos
+# 1000Ojos: Sistema Postsismo IA Offline
 
 Monorepo reproducible para documentar evidencia postsismo con funcionamiento
 offline. Incluye la aplicación Expo para Android y PWA, Gemma 4 E2B con
