@@ -9,7 +9,7 @@
 | 🎬 **Video demo (1 min)** | `[COMPLETAR: link YouTube]` |
 | 🌐 **Demo en vivo** | `[COMPLETAR: URL del tablero]` |
 | 📱 **Probar el bot** | Envía `join [código-sandbox]` por WhatsApp al `[COMPLETAR: número Twilio]` |
-| 👥 **Equipo** | `[COMPLETAR: nombres y roles]` |
+| 👥 **Equipo** | German Burgos (estrategia, datos y gobierno) · Julián Henao (IA offline y plataforma) · Luis Rosal (producto y desarrollo) |
 
 ---
 
