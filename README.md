@@ -70,4 +70,5 @@ multiusuario se debe conectar un repositorio remoto y adaptar el flujo de PR.
 - [Resumen del producto](docs/product-brief.md)
 - [Grafo de tareas](docs/task-graph.md)
 - [Runbook](docs/runbook.md)
+- [Prueba de funcionamiento](docs/proof-of-life.md)
 - [Registro de decisiones](docs/decisions/README.md)
