@@ -25,6 +25,9 @@ redirección para una aplicación de página única.
 - catálogo local de infraestructura con búsqueda y estados;
 - inspección manual multieje, población y necesidades agregadas;
 - cámara o importación de una imagen con huella SHA-256;
+- metadatos inmutables de GPS, precisión, altitud, rumbo, velocidad,
+  movimiento, dispositivo y EXIF disponible, con estado explícito cuando un
+  sensor no está autorizado o disponible;
 - evidencia inmutable y anotación manual en registros separados;
 - consulta local sobre una biblioteca aprobada, con fuentes visibles;
 - capas separadas para cobertura, daño revisado, IA pendiente y necesidades;

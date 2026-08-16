@@ -1,5 +1,8 @@
 import * as Crypto from 'expo-crypto';
+import * as Device from 'expo-device';
 import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
+import { DeviceMotion, DeviceMotionMeasurement } from 'expo-sensors';
 import {
   ArrowLeft,
   Camera,
@@ -34,8 +37,10 @@ import {
   AccessLevel,
   DamageLevel,
   EvidenceAnnotation,
+  EvidenceSensorMetadata,
   Inspection,
   Infrastructure,
+  MediaEvidence,
   NeedType,
   ObservationState,
   Observability,
@@ -58,6 +63,64 @@ import {
 const options = <T extends string>(values: T[], labels: Record<T, string>) =>
   values.map((value) => ({ value, label: labels[value] }));
 
+const captureLocation = async (): Promise<EvidenceSensorMetadata['location']> => {
+  try {
+    const available = await Location.hasServicesEnabledAsync();
+    if (!available) return { status: 'unavailable' };
+    const permission = await Location.requestForegroundPermissionsAsync();
+    if (!permission.granted) return { status: 'denied' };
+    const reading = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+    return {
+      status: 'captured',
+      timestamp: reading.timestamp,
+      latitude: reading.coords.latitude,
+      longitude: reading.coords.longitude,
+      accuracyMeters: reading.coords.accuracy,
+      altitudeMeters: reading.coords.altitude,
+      altitudeAccuracyMeters: reading.coords.altitudeAccuracy,
+      headingDegrees: reading.coords.heading,
+      speedMetersPerSecond: reading.coords.speed,
+      mocked: reading.mocked,
+    };
+  } catch {
+    return { status: 'error' };
+  }
+};
+
+const captureMotion = async (): Promise<EvidenceSensorMetadata['motion']> => {
+  try {
+    if (!(await DeviceMotion.isAvailableAsync())) return { status: 'unavailable' };
+    const permission = await DeviceMotion.requestPermissionsAsync();
+    if (!permission.granted) return { status: 'denied' };
+    DeviceMotion.setUpdateInterval(100);
+    return await new Promise((resolve) => {
+      let settled = false;
+      const finish = (reading?: DeviceMotionMeasurement) => {
+        if (settled) return;
+        settled = true;
+        subscription.remove();
+        if (!reading) {
+          resolve({ status: 'unavailable' });
+          return;
+        }
+        resolve({
+          status: 'captured',
+          intervalMs: reading.interval,
+          orientationDegrees: reading.orientation,
+          acceleration: reading.acceleration,
+          accelerationIncludingGravity: reading.accelerationIncludingGravity,
+          rotation: reading.rotation,
+          rotationRate: reading.rotationRate,
+        });
+      };
+      const subscription = DeviceMotion.addListener((reading) => finish(reading));
+      setTimeout(() => finish(), 1200);
+    });
+  } catch {
+    return { status: 'error' };
+  }
+};
+
 export const InspectionView = ({
   infrastructure,
   inspection,
@@ -68,23 +131,12 @@ export const InspectionView = ({
 }: {
   infrastructure: Infrastructure;
   inspection: Inspection;
-  media: Array<{ id: string; uri: string; sha256: string; capturedAt: string }>;
+  media: MediaEvidence[];
   onBack: () => void;
   onSave: (inspection: Inspection) => void;
   onAddEvidence: (
     inspection: Inspection,
-    media: {
-      id: string;
-      inspectionId: string;
-      uri: string;
-      sha256: string;
-      mimeType: string;
-      width: number;
-      height: number;
-      capturedAt: string;
-      provenance: 'camera' | 'library';
-      immutable: true;
-    },
+    media: MediaEvidence,
     annotation: EvidenceAnnotation,
   ) => void;
 }) => {
@@ -135,11 +187,13 @@ export const InspectionView = ({
           ? await ImagePicker.launchCameraAsync({
               mediaTypes: ['images'],
               base64: true,
+              exif: true,
               quality: 0.55,
             })
           : await ImagePicker.launchImageLibraryAsync({
               mediaTypes: ['images'],
               base64: true,
+              exif: true,
               quality: 0.55,
             });
 
@@ -162,6 +216,20 @@ export const InspectionView = ({
         Crypto.CryptoDigestAlgorithm.SHA256,
         asset.base64,
       );
+      const [location, motion] = await Promise.all([captureLocation(), captureMotion()]);
+      const sensorMetadata: EvidenceSensorMetadata = {
+        recordedAt: new Date().toISOString(),
+        location,
+        motion,
+        device: {
+          manufacturer: Device.manufacturer,
+          modelName: Device.modelName,
+          osName: Device.osName,
+          osVersion: Device.osVersion,
+          isDevice: Device.isDevice,
+        },
+        exif: asset.exif ?? null,
+      };
       const nextDraft = { ...draft, mediaIds: Array.from(new Set([...draft.mediaIds, id])) };
       const annotation: EvidenceAnnotation = {
         id: `annotation-${id}`,
@@ -186,6 +254,7 @@ export const InspectionView = ({
           height: asset.height,
           capturedAt: timestamp,
           provenance,
+          sensorMetadata,
           immutable: true,
         },
         annotation,
@@ -332,6 +401,11 @@ export const InspectionView = ({
                 <Image source={{ uri: item.uri }} style={styles.photo} />
                 <Text numberOfLines={1} style={styles.hash}>SHA-256 {item.sha256.slice(0, 16)}…</Text>
                 <Text style={styles.photoTime}>{new Date(item.capturedAt).toLocaleString('es-CO')}</Text>
+                <Text style={styles.photoTime}>
+                  {item.sensorMetadata.location.status === 'captured'
+                    ? `GPS ±${Math.round(item.sensorMetadata.location.accuracyMeters ?? 0)} m`
+                    : `GPS ${item.sensorMetadata.location.status}`}
+                </Text>
               </View>
             ))}
           </View>

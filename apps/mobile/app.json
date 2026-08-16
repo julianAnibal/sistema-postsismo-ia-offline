@@ -8,7 +8,10 @@
     "icon": "./assets/1000-ojos-icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMotionUsageDescription": "1000 Ojos registra la orientación del teléfono junto con la evidencia fotográfica."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -26,6 +29,12 @@
       "shortName": "1000 Ojos"
     },
     "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "1000 Ojos registra la ubicación y precisión GPS de la evidencia fotográfica."
+        }
+      ],
       [
         "expo-image-picker",
         {

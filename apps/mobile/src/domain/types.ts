@@ -81,7 +81,43 @@ export interface MediaEvidence {
   height: number;
   capturedAt: string;
   provenance: 'camera' | 'library';
+  sensorMetadata: EvidenceSensorMetadata;
   immutable: true;
+}
+
+export type SensorCaptureStatus = 'captured' | 'denied' | 'unavailable' | 'error';
+
+export interface EvidenceSensorMetadata {
+  recordedAt: string;
+  location: {
+    status: SensorCaptureStatus;
+    timestamp?: number;
+    latitude?: number;
+    longitude?: number;
+    accuracyMeters?: number | null;
+    altitudeMeters?: number | null;
+    altitudeAccuracyMeters?: number | null;
+    headingDegrees?: number | null;
+    speedMetersPerSecond?: number | null;
+    mocked?: boolean;
+  };
+  motion: {
+    status: SensorCaptureStatus;
+    intervalMs?: number;
+    orientationDegrees?: number;
+    acceleration?: { x: number; y: number; z: number; timestamp: number } | null;
+    accelerationIncludingGravity?: { x: number; y: number; z: number; timestamp: number };
+    rotation?: { alpha: number; beta: number; gamma: number; timestamp: number };
+    rotationRate?: { alpha: number; beta: number; gamma: number; timestamp: number } | null;
+  };
+  device: {
+    manufacturer: string | null;
+    modelName: string | null;
+    osName: string | null;
+    osVersion: string | null;
+    isDevice: boolean;
+  };
+  exif: Record<string, unknown> | null;
 }
 
 export interface EvidenceAnnotation {

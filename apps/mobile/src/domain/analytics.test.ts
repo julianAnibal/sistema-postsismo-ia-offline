@@ -36,6 +36,19 @@ describe('computeGridMetrics', () => {
       height: 10,
       capturedAt: '2038-01-19T10:00:00.000Z',
       provenance: 'library',
+      sensorMetadata: {
+        recordedAt: '2038-01-19T10:00:00.000Z',
+        location: { status: 'unavailable' },
+        motion: { status: 'unavailable' },
+        device: {
+          manufacturer: null,
+          modelName: null,
+          osName: null,
+          osVersion: null,
+          isDevice: false,
+        },
+        exif: null,
+      },
       immutable: true,
     });
     state.annotations.push({

@@ -5,12 +5,27 @@ import { createDraftInspection, createSeedState } from '../data/seed';
 import {
   AppState,
   EvidenceAnnotation,
+  EvidenceSensorMetadata,
   Inspection,
   MediaEvidence,
   OutboxItem,
 } from '../domain/types';
 
 const STORAGE_KEY = '@sierra-clara/field-state/v1';
+
+const unavailableSensorMetadata = (recordedAt: string): EvidenceSensorMetadata => ({
+  recordedAt,
+  location: { status: 'unavailable' },
+  motion: { status: 'unavailable' },
+  device: {
+    manufacturer: null,
+    modelName: null,
+    osName: null,
+    osVersion: null,
+    isDevice: false,
+  },
+  exif: null,
+});
 
 const upsert = <T extends { id: string }>(items: T[], item: T) => [
   ...items.filter((candidate) => candidate.id !== item.id),
@@ -45,7 +60,14 @@ export const useFieldStore = () => {
         if (!stored) return;
         const parsed = JSON.parse(stored) as AppState;
         if (parsed.schemaVersion === 1) {
-          setState({ ...parsed, modelAnalyses: parsed.modelAnalyses ?? [] });
+          setState({
+            ...parsed,
+            media: (parsed.media ?? []).map((item) => ({
+              ...item,
+              sensorMetadata: item.sensorMetadata ?? unavailableSensorMetadata(item.capturedAt),
+            })),
+            modelAnalyses: parsed.modelAnalyses ?? [],
+          });
         }
       })
       .catch(() => undefined)
