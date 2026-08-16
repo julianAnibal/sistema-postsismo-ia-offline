@@ -1,4 +1,4 @@
-import { copyFile, mkdir, stat } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,10 +15,14 @@ await mkdir(outputRoot, { recursive: true });
 for (const file of files) {
   const source = resolve(sourceRoot, file);
   const destination = resolve(outputRoot, file);
-  const sourceStat = await stat(source);
-  await copyFile(source, destination);
+  if (file.endsWith('.js')) {
+    const sourceText = await readFile(source, 'utf8');
+    await writeFile(destination, `${sourceText.replace(/\n+$/u, '')}\n`, 'utf8');
+  } else {
+    await copyFile(source, destination);
+  }
   const destinationStat = await stat(destination);
-  if (destinationStat.size !== sourceStat.size) {
+  if (destinationStat.size === 0) {
     throw new Error(`LiteRT-LM runtime copy failed for ${file}`);
   }
 }
