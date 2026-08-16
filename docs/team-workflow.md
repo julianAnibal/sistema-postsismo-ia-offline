@@ -40,6 +40,20 @@ la entrega, pero no aprueba en solitario sus propias decisiones.
 9. Integrar con squash y conservar `DNA-XX` en el mensaje final.
 10. Una persona, no el agente, mueve la tarea de `In Review` a `Done`.
 
+## Proteccion de `main`
+
+La validacion `Validate harness` se ejecuta en cada push y pull request. GitHub
+no permite reglas obligatorias de proteccion para este repositorio privado con
+el plan actual; requiere GitHub Pro o visibilidad publica. Mientras siga
+privado, el equipo aplica estas reglas operativas:
+
+- no hacer push directo a `main` despues de la configuracion inicial;
+- integrar solamente PRs con validacion verde y una revision cruzada;
+- usar squash merge y conservar el identificador `DNA-XX`;
+- no hacer force push ni borrar `main`.
+
+El propietario debe activar la proteccion de rama en cuanto el plan lo permita.
+
 ## Limites de concurrencia
 
 - Maximo tres tareas humanas activas, una por persona.
