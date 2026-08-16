@@ -19,4 +19,3 @@ El Gate se abre cuando las cuatro ADRs pasan a *Aprobada*. Marcar aquí antes de
 **Estado del Gate:** 2 de 4 aprobadas (F1 completo). Faltan ADR-059 y ADR-061 para abrir DNA-62.
 
 **Al cerrar:** mover DNA-58, 59, 60, 61 y 62 a Done → habilita DNA-63 (formularios ODK), DNA-64 y DNA-65.
-

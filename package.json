@@ -1,0 +1,18 @@
+{
+  "name": "1000-ojos-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["apps/backend", "packages/contracts"],
+  "scripts": {
+    "install:all": "npm ci && npm --prefix apps/mobile ci",
+    "dev:backend": "npm --workspace apps/backend run dev",
+    "dev:mobile": "npm --prefix apps/mobile run start",
+    "build:backend": "npm --workspace apps/backend run build",
+    "build:web": "npm --prefix apps/mobile run export:web",
+    "migrate": "npm --workspace apps/backend run migrate:field",
+    "test:backend": "npm --workspace apps/backend run test:unit",
+    "test:mobile": "npm --prefix apps/mobile test",
+    "typecheck": "npm --workspace apps/backend run typecheck && npm --prefix apps/mobile run typecheck"
+  },
+  "engines": { "node": ">=20" }
+}

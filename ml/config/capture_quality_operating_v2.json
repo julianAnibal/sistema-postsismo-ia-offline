@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "experimentId": "capture-quality-clean-control-operating-v2",
+  "seed": 2000,
+  "fixedModel": {
+    "experimentId": "capture-quality-synthetic-concrete-v1",
+    "sha256": "64a057ef456befa9eda477e38511fc4d3fa228d1098884e9451bb77e835d116e"
+  },
+  "calibration": {
+    "maximumPerLabelFalseAlertRateOnCleanControls": 0.005,
+    "sourceSplit": "validation"
+  },
+  "challenge": {
+    "confidenceLevel": 0.95,
+    "maximumAnyAlertWilsonUpperOnCleanControls": 0.05,
+    "minimumBaseImages": 1000,
+    "minimumPerDefectRecallWilsonLower": 0.9,
+    "nearDuplicateHammingDistance": 4,
+    "openOnce": true
+  },
+  "scope": {
+    "allowed": "Synthetic corruption development challenge on concrete patches after exact and perceptual deduplication against the training source.",
+    "prohibited": [
+      "real-camera capture quality",
+      "field or post-earthquake performance",
+      "structural damage, severity, safety, habitability, or triage",
+      "production or phone readiness"
+    ]
+  }
+}

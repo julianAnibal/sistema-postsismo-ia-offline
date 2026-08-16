@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "experimentId": "capture-quality-synthetic-concrete-v1",
+  "seed": 1000,
+  "input": {
+    "channels": 3,
+    "height": 96,
+    "width": 96,
+    "valueRange": [
+      0.0,
+      1.0
+    ]
+  },
+  "split": {
+    "maximumPerceptualHashHammingDistance": 4,
+    "ratios": {
+      "test": 0.15,
+      "train": 0.7,
+      "validation": 0.15
+    }
+  },
+  "syntheticLabels": [
+    "synthetic_blur",
+    "synthetic_underexposure",
+    "synthetic_overexposure",
+    "synthetic_occlusion"
+  ],
+  "transforms": {
+    "blurRadius": [
+      1.2,
+      3.5
+    ],
+    "occlusionAreaFraction": [
+      0.3,
+      0.55
+    ],
+    "overexposureWhiteBlend": [
+      0.45,
+      0.8
+    ],
+    "underexposureMultiplier": [
+      0.15,
+      0.45
+    ]
+  },
+  "model": {
+    "architecture": "tiny-depthwise-cnn-v1",
+    "maximumOnnxBytes": 262144,
+    "opset": 18
+  },
+  "training": {
+    "batchSize": 96,
+    "epochs": 10,
+    "learningRate": 0.003,
+    "maximumWorkers": 2,
+    "weightDecay": 0.0001
+  },
+  "selection": {
+    "maximumFalsePositiveRate": 0.05,
+    "maximumOnnxParityAbsoluteError": 0.0001,
+    "minimumMacroAurocLower95": 0.95,
+    "minimumPairedMacroBalancedAccuracyImprovement": 0.02,
+    "minimumPerLabelRecallLower95": 0.9
+  },
+  "evaluation": {
+    "bootstrapReplicates": 1000,
+    "confidenceLevel": 0.95,
+    "openTestOnce": true,
+    "oodTransform": "motion_blur"
+  }
+}

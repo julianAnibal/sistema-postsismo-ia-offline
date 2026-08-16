@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-08-16T10:36:00Z",
+  "claim": "The PWA loaded the exact Gemma 4 E2B web artifact from OPFS and generated a response without a working application server or network requests during generation.",
+  "artifact": {
+    "repository": "litert-community/gemma-4-E2B-it-litert-lm",
+    "revision": "6b78abd019e61a1ca4cbe3b212d2c9ce8ff38a94",
+    "file": "gemma-4-E2B-it-web.litertlm",
+    "size_bytes": 2008432640,
+    "sha256": "3a08e8d94e23b814ae5414469c370c503813949acb8ceaa17e4ebf8a35af35b5",
+    "verification": "streamed SHA-256 during OPFS installation; metadata and File size/lastModified matched before load"
+  },
+  "runtime": {
+    "package": "@litert-lm/core",
+    "version": "0.15.0",
+    "backend": "GPU_ARTISAN",
+    "wasm_variant": "litertlm_wasm_compat_asyncify_internal",
+    "max_context_tokens": 2048,
+    "max_output_tokens": 256,
+    "model_loading": "Blob stream from OPFS; no JavaScript full-file buffer"
+  },
+  "environment": {
+    "browser": "Chrome 151.0.0.0",
+    "secure_context": true,
+    "webgpu": true,
+    "gpu_vendor": "apple",
+    "gpu_architecture": "metal-3",
+    "opfs": true
+  },
+  "storage_after_duplicate_cache_fix": {
+    "model_file_bytes": 2008432640,
+    "filesystem_usage_bytes": 2008433581,
+    "cache_usage_bytes": 46668288,
+    "total_origin_usage_bytes": 2055103229,
+    "quota_bytes": 12792521469,
+    "persistent_storage_granted": false,
+    "service_worker_cache_observed": "1000-ojos-v5-gemma",
+    "cross_origin_model_cached": false
+  },
+  "offline_rehearsal": {
+    "application_server_http_status": 404,
+    "model_hosts_blocked": true,
+    "app_shell_from_service_worker": true,
+    "runtime_assets_from_service_worker": true,
+    "model_from_opfs": true,
+    "generation_network_requests": 0,
+    "generation_elapsed_milliseconds": 6800,
+    "prompt": "Redacta un borrador breve que distinga lo registrado por el inspector de lo faltante.",
+    "output": "Registros del inspector\nSe ha registrado un daño en un muro, específicamente una fisura de nivel leve. La calidad de la observación fue buena, realizada desde el exterior. La etiqueta manual indica \"Muro · Fisura · nivel Leve\". El inspector señaló la fisura visible para revisión profesional.\n\nFaltantes\nFalta evidencia fotográfica vinculada a la observación.\n\nBorrador sugerido\nSe recomienda adjuntar evidencia fotográfica para complementar el registro de la fisura observada en el muro.\n\nRevisión profesional obligatoria."
+  },
+  "post_proof_offline_hardening": {
+    "litert_javascript_in_main_bundle": true,
+    "first_visit_main_bundle_precached": true,
+    "cold_reload_observed_with_application_server_status": 404,
+    "cold_reload_observed_cache": "1000-ojos-v7-gemma",
+    "current_cache": "1000-ojos-v8-gemma",
+    "v8_delta": "adds favicon to the same precache set"
+  },
+  "evidence": {
+    "screenshot": "docs/evidence/gemma-e2b-offline-proof.png"
+  },
+  "limits": [
+    "One macOS Chrome execution is not a physical-phone benchmark.",
+    "Browser persistence was not granted, so eviction resilience remains a deployment gate.",
+    "LiteRT-LM JavaScript is an early-preview text-only runtime.",
+    "This proves local drafting, not structural diagnosis, habitability, triage, iOS support, or minimum phone resource use."
+  ]
+}

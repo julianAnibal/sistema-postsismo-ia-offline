@@ -1,0 +1,46 @@
+{
+  "name": "1000-ojos-mobile",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@expo/metro-runtime": "~57.0.10",
+    "@litert-lm/core": "0.15.0",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/netinfo": "12.0.1",
+    "expo": "~57.0.13",
+    "expo-crypto": "~57.0.1",
+    "expo-device": "~57.0.1",
+    "expo-file-system": "~57.0.4",
+    "expo-image-picker": "~57.0.10",
+    "expo-location": "~57.0.10",
+    "expo-secure-store": "~57.0.1",
+    "expo-sensors": "~57.0.2",
+    "expo-status-bar": "~57.0.1",
+    "hash-wasm": "4.12.0",
+    "jpeg-js": "0.4.4",
+    "lucide-react-native": "^1.31.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.2",
+    "react-native-svg": "15.15.4",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.10"
+  },
+  "scripts": {
+    "start": "expo start",
+    "prepare:litert-lm": "node ./scripts/copy-litert-lm-wasm.mjs",
+    "preweb": "npm run prepare:litert-lm",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "preexport:web": "npm run prepare:litert-lm",
+    "export:web": "expo export --platform web"
+  },
+  "private": true
+}

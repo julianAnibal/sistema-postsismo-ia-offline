@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "1000 Ojos",
+    "slug": "1000-ojos",
+    "version": "1.0.0",
+    "scheme": "sierraclara",
+    "orientation": "portrait",
+    "icon": "./assets/1000-ojos-icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMotionUsageDescription": "1000 Ojos registra la orientación del teléfono junto con la evidencia fotográfica."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#147D73",
+        "foregroundImage": "./assets/1000-ojos-icon.png"
+      },
+      "allowBackup": false,
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ],
+      "predictiveBackGestureEnabled": false,
+      "package": "co.sierraclara.campo"
+    },
+    "web": {
+      "favicon": "./assets/1000-ojos-favicon.png",
+      "bundler": "metro",
+      "output": "single",
+      "name": "1000 Ojos",
+      "shortName": "1000 Ojos"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "1000 Ojos registra la ubicación y precisión GPS de la evidencia fotográfica."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "1000 Ojos usa la foto seleccionada como evidencia de la inspección.",
+          "cameraPermission": "1000 Ojos usa la cámara para registrar evidencia de campo.",
+          "microphonePermission": false
+        }
+      ],
+      "expo-secure-store"
+    ]
+  }
+}

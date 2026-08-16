@@ -1,16 +1,77 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+local.properties
+**/local.properties
+*.jks
+*.keystore
+*.p12
+*.key
+
+# Dependencies and generated builds
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+.next/
+**/.next/
+.gradle/
+**/.gradle/
+.cxx/
+**/.cxx/
+.expo/
+**/.expo/
+coverage/
+**/coverage/
+test-results/
+playwright-report/
+.playwright-cli/
+**/.playwright-cli/
+output/
+**/output/
+
+# Binary deliverables and separately provisioned models
+*.apk
+*.aab
+*.litertlm
+
+# Private/runtime data
+private-data/
+/field-media/
+/.field-media/
+*.sqlite
+*.sqlite3
+*.db
+
+# Python and ML generated artifacts
+__pycache__/
+*.pyc
+.venv/
+.venv-validation/
+ml/artifacts/
+ml/runs/
+ml/models/
+
+# Provider and coworker state
+.vercel/
+.netlify/
+.codex/coworkers/
+.omo/
+logs/
+*.log
+
+# Local orchestration state preserved from the source repo
 .opensymphony*
 !.opensymphony/
 .opensymphony/*
 !.opensymphony/memory/
 .opensymphony/memory/*
 !.opensymphony/memory/memory.yaml
-.env
-.env.*
-!.env.example
-logs/
-*.log
-*.sqlite
-*.sqlite3
-*.db
-private-data/
-field-media/
+
+.DS_Store
