@@ -3,9 +3,9 @@ import NetInfo from '@react-native-community/netinfo';
 import {
   ClipboardList,
   CloudUpload,
-  Map,
   Menu,
   MoreHorizontal,
+  PlusCircle,
   WifiOff,
 } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
@@ -22,8 +22,8 @@ import {
 
 import { InfrastructureList } from './src/components/InfrastructureList';
 import { InspectionView } from './src/components/InspectionView';
-import { MapDashboard } from './src/components/MapDashboard';
 import { MoreView } from './src/components/MoreView';
+import { NewReportView } from './src/components/NewReportView';
 import { SyncView } from './src/components/SyncView';
 import { colors } from './src/components/theme';
 import { StatusTag } from './src/components/ui';
@@ -32,11 +32,11 @@ import { registerServiceWorker, useInstallPrompt } from './src/platform/pwa';
 import { useFieldStore } from './src/storage/useFieldStore';
 import { loadSyncSettings, synchronizeFieldState } from './src/sync/fieldSync';
 
-type Tab = 'work' | 'map' | 'sync' | 'more';
+type Tab = 'work' | 'new' | 'sync' | 'more';
 
 const navItems: Array<{ id: Tab; label: string; mobileLabel: string; icon: typeof ClipboardList }> = [
   { id: 'work', label: 'Trabajo', mobileLabel: 'Trabajo', icon: ClipboardList },
-  { id: 'map', label: 'Mapa', mobileLabel: 'Mapa', icon: Map },
+  { id: 'new', label: 'Nuevo reporte', mobileLabel: 'Nuevo', icon: PlusCircle },
   { id: 'sync', label: 'Sincronizar', mobileLabel: 'Envíos', icon: CloudUpload },
   { id: 'more', label: 'Más', mobileLabel: 'Más', icon: MoreHorizontal },
 ];
@@ -53,6 +53,7 @@ export default function App() {
     ready,
     storageError,
     getInspection,
+    createReport,
     saveInspection,
     addEvidence,
     acknowledgeSync,
@@ -159,7 +160,18 @@ export default function App() {
               onAddEvidence={addEvidence}
             />
           ) : null}
-          {tab === 'map' ? <MapDashboard state={state} /> : null}
+          {tab === 'new' ? (
+            <NewReportView
+              onCreate={async (infrastructure, inspection) => {
+                const saved = await createReport(infrastructure, inspection);
+                if (saved) {
+                  setSelected(infrastructure);
+                  setTab('work');
+                }
+                return saved;
+              }}
+            />
+          ) : null}
           {tab === 'sync' ? <SyncView state={state} onAcknowledged={acknowledgeSync} /> : null}
           {tab === 'more' ? (
             <MoreView

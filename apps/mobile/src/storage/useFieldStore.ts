@@ -9,6 +9,7 @@ import {
 import {
   AppState,
   EvidenceAnnotation,
+  Infrastructure,
   Inspection,
   MediaEvidence,
   OutboxAcknowledgement,
@@ -179,6 +180,17 @@ export const useFieldStore = () => {
     [commit],
   );
 
+  const createReport = useCallback(
+    (infrastructure: Infrastructure, inspection: Inspection) =>
+      commit((current) => ({
+        ...current,
+        infrastructures: upsert(current.infrastructures, infrastructure),
+        inspections: upsert(current.inspections, inspection),
+        outbox: queue(current.outbox, 'inspection', inspection.id),
+      })),
+    [commit],
+  );
+
   const addEvidence = useCallback(
     (inspection: Inspection, media: MediaEvidence, annotation: EvidenceAnnotation) => {
       const updatedInspection: Inspection = {
@@ -237,6 +249,7 @@ export const useFieldStore = () => {
     ready,
     storageError,
     getInspection,
+    createReport,
     saveInspection,
     addEvidence,
     acknowledgeSync,

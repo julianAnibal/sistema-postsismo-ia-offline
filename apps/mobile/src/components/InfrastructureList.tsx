@@ -55,7 +55,7 @@ export const InfrastructureList = ({
 
   return (
     <View>
-      <SectionTitle title="Infraestructura asignada" detail={`${reviewedCount}/${state.infrastructures.length} revisadas`} />
+      <SectionTitle title="Reportes de campo" detail={`${reviewedCount}/${state.infrastructures.length} revisados`} />
       <View style={styles.summaryBand}>
         <View style={styles.summaryItem}>
           <Text style={styles.summaryValue}>{state.infrastructures.length}</Text>
@@ -130,7 +130,7 @@ export const InfrastructureList = ({
                 </View>
                 <Text style={styles.name}>{item.name}</Text>
                 <Text style={styles.meta}>
-                  {infrastructureLabels[item.type]} · {item.sector} · Celda {item.gridCell}
+                  {infrastructureLabels[item.type]} · {item.sector} · {item.gridCell === 'SIN-UBICACION' ? 'Sin georreferencia' : `Celda ${item.gridCell}`}
                 </Text>
               </View>
               <StatusTag label={isReviewed ? 'Revisada' : 'Pendiente'} tone={isReviewed ? 'good' : 'info'} />
