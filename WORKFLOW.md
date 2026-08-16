@@ -20,7 +20,7 @@ workspace:
 
 hooks:
   after_create: |
-    git clone --no-local --depth 1 '/Users/macpro16/Documents/Codex/2026-08-15/ana/outputs/symphony-harness-postsismo' .
+    git clone --depth 1 'https://github.com/julianAnibal/sistema-postsismo-ia-offline.git' .
   before_run: |
     git status --short
   after_run: |
@@ -119,8 +119,8 @@ approval.
 
 - `Backlog`: outside automatic execution. Do not modify.
 - `Todo`: queued. Move to `In Progress` before doing work.
-- `In Progress`: investigate, decide or implement, validate, commit and push the
-  issue branch to the local origin.
+- `In Progress`: investigate, decide or implement, validate, commit, push the
+  issue branch to GitHub and open or update its pull request.
 - `In Review`: stop changing files. Wait for a human to move the issue to `Done`
   or back to `In Progress` with feedback.
 - `Done`, `Canceled`, `Duplicate`: terminal. Do nothing.
@@ -179,7 +179,8 @@ Before moving to `In Review`:
 - no secret or PII is present in the diff;
 - `git diff --check` passes;
 - changes are committed to `work/{{ issue.identifier }}`;
-- the branch is pushed to local `origin`;
+- the branch is pushed to GitHub `origin`;
+- a pull request targets `main` and links the Linear issue;
 - the workpad records commit SHA, changed files, validation and residual risk;
 - the dependency dashboard in the Linear project is updated when the critical
   path materially changes.
@@ -224,5 +225,6 @@ Then move the issue to `In Review`. Do not move it to `Done` yourself.
 
 ## Final response
 
-Report only work completed, validation results, branch/commit and blockers.
+Report only work completed, validation results, branch/commit, pull request and
+blockers.
 Do not claim human approval or production readiness.

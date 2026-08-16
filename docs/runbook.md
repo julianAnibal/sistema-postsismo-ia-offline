@@ -4,15 +4,17 @@
 
 - `LINEAR_API_KEY` personal con acceso al equipo `DNA+art`.
 - Codex CLI autenticado con ChatGPT.
+- GitHub CLI autenticado con acceso al repositorio privado.
 - OpenSymphony y Rust disponibles en `PATH`.
 - Este repositorio debe tener al menos un commit en `main`.
 
 ## Preparar sesión
 
 ```bash
+gh auth status
 source ~/.zshrc
 export LINEAR_API_KEY='lin_api_...'
-cd /Users/macpro16/Documents/Codex/2026-08-15/ana/outputs/symphony-harness-postsismo
+cd sistema-postsismo-ia-offline
 ./scripts/doctor.sh
 ```
 
@@ -55,7 +57,8 @@ hasta resolverlas.
 4. Generar una key nueva y exportarla sólo en la sesión.
 5. Confirmar que `.env`, logs y workspaces no contienen la key.
 
-## Paso futuro para colaboración
+## Colaboración por GitHub
 
-Conectar un repositorio GitHub privado, autenticar `gh`, cambiar el hook de clone
-y adoptar un flujo PR/revisión antes de permitir múltiples implementadores.
+Cada tarea usa una rama `work/DNA-XX`, la publica en GitHub y abre o actualiza
+un pull request hacia `main`. La revisión del código ocurre en GitHub; Linear
+conserva el estado, las dependencias y la aprobación humana de las decisiones.

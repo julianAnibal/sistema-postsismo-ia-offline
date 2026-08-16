@@ -13,7 +13,7 @@ mantiene las tareas de alto riesgo bloqueadas por ADRs aprobadas.
 - Proyecto: [Sistema Postsismo IA Offline](https://linear.app/dnaart/project/sistema-postsismo-ia-offline-d12fe65705e4)
 - Ejecutor: Codex app-server local
 - OpenHands: no instalado; es opcional
-- Repositorio remoto: local por ahora; no se crean PR de GitHub
+- Repositorio remoto: [julianAnibal/sistema-postsismo-ia-offline](https://github.com/julianAnibal/sistema-postsismo-ia-offline), privado
 
 ## Qué quedó creado
 
@@ -30,6 +30,9 @@ OpenSymphony necesita una API key personal de Linear en la terminal. La conexió
 OAuth de la aplicación de escritorio no expone esa clave al proceso local.
 
 ```bash
+gh auth login
+git clone https://github.com/julianAnibal/sistema-postsismo-ia-offline.git
+cd sistema-postsismo-ia-offline
 source ~/.zshrc
 export LINEAR_API_KEY='lin_api_...'
 ./scripts/doctor.sh
@@ -39,7 +42,7 @@ export LINEAR_API_KEY='lin_api_...'
 En otra terminal:
 
 ```bash
-cd /Users/macpro16/Documents/Codex/2026-08-15/ana/outputs/symphony-harness-postsismo
+cd sistema-postsismo-ia-offline
 ./scripts/tui.sh
 ```
 
@@ -54,16 +57,17 @@ Backlog -> Todo -> In Progress -> In Review -> Done
 
 - El operador mueve una tarea elegida de `Backlog` a `Todo`.
 - OpenSymphony verifica dependencias y crea un espacio aislado.
-- Codex documenta la decisión o implementa, valida y crea una rama local.
+- Codex documenta o implementa, valida, publica una rama y abre un PR.
 - La tarea pasa a `In Review`.
 - Una persona aprueba y mueve a `Done`, o devuelve a `In Progress`.
 
 ## Límite actual
 
 El harness está instalado y configurado, pero no debe ejecutarse hasta exportar
-`LINEAR_API_KEY`. GitHub CLI tampoco está autenticado; por eso esta primera
-versión usa ramas en un origen local y revisión en Linear. Antes de colaboración
-multiusuario se debe conectar un repositorio remoto y adaptar el flujo de PR.
+`LINEAR_API_KEY`. La estación operadora también debe mantener autenticado
+GitHub CLI para clonar el repositorio privado y publicar ramas de trabajo. La
+revisión humana ocurre en GitHub y la aprobación de decisiones se conserva en
+Linear.
 
 ## Documentación
 

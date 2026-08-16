@@ -10,8 +10,14 @@ done
 
 rg -q 'project_slug: "sistema-postsismo-ia-offline-d12fe65705e4"' WORKFLOW.md
 rg -q 'harness: codex_app_server' WORKFLOW.md
+rg -q 'github.com/julianAnibal/sistema-postsismo-ia-offline.git' WORKFLOW.md
 rg -q 'OPENSYMPHONY_HARNESS=.*codex_app_server' scripts/run.sh
 rg -q '^\.env$' .gitignore
+
+if rg -n '/Users/[^/]+/' --glob '!docs/proof-of-life.md' --glob '!scripts/validate.sh' .; then
+  print -u2 "Se encontro una ruta personal fuera del informe historico."
+  exit 1
+fi
 
 if rg -n '(lin_api_[A-Za-z0-9]+|sk-[A-Za-z0-9]{12,}|BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY)' --glob '!*.example' .; then
   print -u2 "Se encontró un posible secreto."
