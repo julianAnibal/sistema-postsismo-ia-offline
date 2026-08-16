@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "scheme": "sierraclara",
     "orientation": "portrait",
-    "icon": "./assets/sierra-clara-icon.png",
+    "icon": "./assets/1000-ojos-icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
@@ -13,13 +13,13 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#147D73",
-        "foregroundImage": "./assets/sierra-clara-icon.png"
+        "foregroundImage": "./assets/1000-ojos-icon.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "co.sierraclara.campo"
     },
     "web": {
-      "favicon": "./assets/sierra-clara-favicon.png",
+      "favicon": "./assets/1000-ojos-favicon.png",
       "bundler": "metro",
       "output": "single",
       "name": "1000 Ojos",
