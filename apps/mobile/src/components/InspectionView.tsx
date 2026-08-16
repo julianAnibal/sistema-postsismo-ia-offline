@@ -63,7 +63,7 @@ import {
 } from '../storage/evidenceFiles';
 import { analyzeCaptureQualityProxy } from '../platform/captureQualityProxy';
 import { AssistantPanel } from './AssistantPanel';
-import { colors } from './theme';
+import { colors, shadows } from './theme';
 import {
   ActionButton,
   ChoiceGroup,
@@ -348,6 +348,40 @@ export const InspectionView = ({
         <Text style={styles.warningText}>No declara habitabilidad, seguridad estructural ni aprobación oficial.</Text>
       </View>
 
+      <View style={[styles.photoFirstCard, shadows.card]}>
+        <View style={styles.photoFirstHeader}>
+          <View style={styles.photoFirstNumber}><Text style={styles.photoFirstNumberText}>01</Text></View>
+          <View style={styles.photoFirstCopy}>
+            <Text style={styles.photoFirstTitle}>Empiece por la evidencia</Text>
+            <Text style={styles.photoFirstText}>
+              Capture una vista segura antes de completar la clasificación. El análisis local comprueba archivo, metadatos y extremos de imagen; no interpreta daño.
+            </Text>
+          </View>
+        </View>
+        <View style={styles.photoActions}>
+          <ActionButton
+            label={media.length ? 'Tomar otra foto' : 'Tomar primera fotografía'}
+            icon={Camera}
+            onPress={() => void capture('camera')}
+            disabled={capturing}
+            style={styles.photoFirstAction}
+          />
+          <ActionButton
+            label="Importar evidencia"
+            icon={ImagePlus}
+            variant="secondary"
+            onPress={() => void capture('library')}
+            disabled={capturing}
+          />
+        </View>
+        <View style={styles.localChecks}>
+          <StatusTag label={`${media.length} evidencia${media.length === 1 ? '' : 's'}`} tone={media.length ? 'good' : 'neutral'} />
+          <StatusTag label="SHA-256" tone="info" />
+          <StatusTag label="Proxy local" tone="warning" />
+          <StatusTag label="Sin VLM" tone="neutral" />
+        </View>
+      </View>
+
       <View style={styles.section}>
         <SectionTitle title="1. Acceso y observación" />
         <View style={styles.field}>
@@ -452,6 +486,23 @@ export const InspectionView = ({
             {media.map((item) => (
               <View key={item.id} style={styles.photoItem}>
                 <Image source={{ uri: item.uri }} style={styles.photo} />
+                <View style={styles.analysisStrip}>
+                  <Text style={styles.analysisTitle}>ANÁLISIS LOCAL DE CAPTURA</Text>
+                  <Text style={styles.analysisLine}>
+                    {item.integrity.status === 'verified' ? '✓ Archivo íntegro' : '! Integridad pendiente'}
+                  </Text>
+                  <Text style={styles.analysisLine}>
+                    {item.capturePreflight.status === 'pass' ? '✓ Metadatos suficientes' : '! Revisar metadatos'}
+                  </Text>
+                  <Text style={styles.analysisLine}>
+                    {item.captureQuality.status === 'measured' && item.captureQuality.signalIds.length === 0
+                      ? '✓ Sin extremo visual detectado'
+                      : item.captureQuality.status === 'measured'
+                        ? '! Señal visual extrema'
+                        : '· Proxy no disponible'}
+                  </Text>
+                  <Text style={styles.analysisDisclaimer}>No detecta fisuras, severidad ni habitabilidad.</Text>
+                </View>
                 <Text numberOfLines={1} style={styles.hash}>SHA-256 {item.sha256.slice(0, 16)}…</Text>
                 <Text style={styles.photoTime}>
                   Integridad:{' '}
@@ -608,6 +659,22 @@ const styles = StyleSheet.create({
   },
   warningTitle: { color: colors.amber, fontSize: 13, fontWeight: '800' },
   warningText: { color: colors.dark, fontSize: 12, lineHeight: 18, marginTop: 2 },
+  photoFirstCard: {
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#BFD8D2',
+    backgroundColor: '#F0F8F6',
+  },
+  photoFirstHeader: { flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
+  photoFirstNumber: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.teal, alignItems: 'center', justifyContent: 'center' },
+  photoFirstNumberText: { color: colors.white, fontSize: 12, fontWeight: '900' },
+  photoFirstCopy: { flex: 1 },
+  photoFirstTitle: { color: colors.ink, fontSize: 17, fontWeight: '900' },
+  photoFirstText: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: 4 },
+  photoFirstAction: { minWidth: 210 },
+  localChecks: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 12 },
   section: { paddingVertical: 22, borderBottomWidth: 1, borderColor: colors.line },
   field: { marginBottom: 18 },
   twoColumns: { flexDirection: 'row', flexWrap: 'wrap', gap: 18 },
@@ -629,6 +696,10 @@ const styles = StyleSheet.create({
   gallery: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 14 },
   photoItem: { width: 172 },
   photo: { width: 172, height: 118, borderRadius: 6, backgroundColor: '#E7EBE9' },
+  analysisStrip: { marginTop: 6, padding: 8, borderRadius: 6, backgroundColor: colors.tealSoft },
+  analysisTitle: { color: colors.teal, fontSize: 8, fontWeight: '900', letterSpacing: 0.5, marginBottom: 4 },
+  analysisLine: { color: colors.dark, fontSize: 9, lineHeight: 14, fontWeight: '700' },
+  analysisDisclaimer: { color: colors.muted, fontSize: 8, lineHeight: 12, marginTop: 4 },
   hash: { fontSize: 10, color: colors.ink, fontWeight: '700', marginTop: 6 },
   photoTime: { fontSize: 10, color: colors.muted, marginTop: 2 },
   emptyMedia: {
