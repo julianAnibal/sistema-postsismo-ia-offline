@@ -1,9 +1,13 @@
 # 1000 ojos production activation on Railway
 
+Configure the Railway service with the repository root as its root directory.
+The root `railway.json` installs the monorepo workspace, builds
+`apps/backend`, and keeps `packages/contracts` available to the backend.
+
 The code is deployable without enabling private field intake. Activation requires operator-owned accounts and secrets that are intentionally absent from Git.
 
 1. Provision a Railway project with:
-   - One Railway service running this Next.js app from `npm run start:railway`. Keep it at one replica because a Railway volume cannot be shared safely by multiple application replicas.
+   - One Railway service using the root `railway.json`. Keep it at one replica because a Railway volume cannot be shared safely by multiple application replicas.
    - A Railway Postgres database attached to the service. Copy its connection string into `DATABASE_URL`.
    - A private Railway volume mounted into the service. The service exposes `RAILWAY_VOLUME_MOUNT_PATH`. Field bytes live at `${RAILWAY_VOLUME_MOUNT_PATH}/field-media/`. Set `FIELD_MEDIA_DIR` instead for local or non-Railway deployments.
    - The externally hosted Vercel PWA origin(s) listed in `FIELD_ALLOWED_ORIGINS` (comma-separated, exact origins). Native callers without an `Origin` header are always allowed.

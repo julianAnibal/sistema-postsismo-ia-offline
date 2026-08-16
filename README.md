@@ -54,8 +54,9 @@ cd apps/mobile && npx expo run:android
 ```
 
 Vercel usa `apps/mobile/vercel.json` con root directory `apps/mobile`.
-Railway usa `apps/backend/railway.json` con root directory `apps/backend`,
-PostgreSQL adjunto y un volumen persistente. Consulte
+Railway usa `railway.json` desde la raíz del repositorio para incluir
+`apps/backend` y `packages/contracts`, con PostgreSQL adjunto y un volumen
+persistente. Consulte
 `apps/backend/docs/1000_OJOS_PRODUCTION.md`.
 
 ## Modelos Gemma

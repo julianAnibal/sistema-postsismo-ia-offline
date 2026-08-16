@@ -29,6 +29,7 @@ build/
 **/.expo/
 coverage/
 **/coverage/
+*.tsbuildinfo
 test-results/
 playwright-report/
 .playwright-cli/
