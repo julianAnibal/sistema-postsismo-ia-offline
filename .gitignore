@@ -14,3 +14,4 @@ logs/
 *.db
 private-data/
 field-media/
+.netlify/

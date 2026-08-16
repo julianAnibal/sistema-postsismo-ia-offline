@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Sierra Clara",
+    "slug": "sierra-clara-field",
+    "version": "1.0.0",
+    "scheme": "sierraclara",
+    "orientation": "portrait",
+    "icon": "./assets/sierra-clara-icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#147D73",
+        "foregroundImage": "./assets/sierra-clara-icon.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "co.sierraclara.campo"
+    },
+    "web": {
+      "favicon": "./assets/sierra-clara-favicon.png",
+      "bundler": "metro",
+      "output": "single",
+      "name": "Sierra Clara",
+      "shortName": "Sierra Clara"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Sierra Clara usa la foto seleccionada como evidencia de la inspección.",
+          "cameraPermission": "Sierra Clara usa la cámara para registrar evidencia de campo.",
+          "microphonePermission": false
+        }
+      ]
+    ]
+  }
+}
