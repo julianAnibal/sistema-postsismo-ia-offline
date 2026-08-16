@@ -10,7 +10,6 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Image,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -77,11 +76,8 @@ export default function App() {
     <SafeAreaView style={styles.root}>
       <StatusBar style="dark" />
       <View style={styles.header}>
-        <View style={styles.brandMark}>
-          <Image source={require('./assets/1000-ojos-icon.png')} style={styles.brandLogo} />
-        </View>
         <View style={styles.headerText}>
-          <Text style={styles.brand}>1000 Ojos</Text>
+          <Text style={styles.brand}>1000 ojos</Text>
           <Text style={styles.operation} numberOfLines={1}>{state.operationName}</Text>
         </View>
         <View style={styles.headerState}>
@@ -204,8 +200,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     gap: 11,
   },
-  brandMark: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
-  brandLogo: { width: 38, height: 38, resizeMode: 'contain' },
   headerText: { flex: 1, minWidth: 0 },
   brand: { color: colors.ink, fontSize: 16, fontWeight: '800' },
   operation: { color: colors.muted, fontSize: 11, marginTop: 1 },
