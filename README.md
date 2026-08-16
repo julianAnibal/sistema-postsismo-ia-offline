@@ -1,0 +1,73 @@
+# OpenSymphony Harness: Sistema Postsismo IA Offline
+
+Harness local para convertir el proyecto de Linear en decisiones revisables y
+tareas de implementación aisladas. Usa OpenSymphony con el Codex app-server y
+mantiene las tareas de alto riesgo bloqueadas por ADRs aprobadas.
+
+## Estado de la instalación
+
+- OpenSymphony: 2.11.3
+- Rust: 1.97.1
+- Codex CLI: 0.142.5, autenticado con ChatGPT
+- Tracker: Linear, equipo `DNA+art`
+- Proyecto: [Sistema Postsismo IA Offline](https://linear.app/dnaart/project/sistema-postsismo-ia-offline-d12fe65705e4)
+- Ejecutor: Codex app-server local
+- OpenHands: no instalado; es opcional
+- Repositorio remoto: local por ahora; no se crean PR de GitHub
+
+## Qué quedó creado
+
+- cinco hitos, desde gobierno hasta validación territorial;
+- epic `DNA-56`;
+- tareas `DNA-57` a `DNA-80` con criterios de aceptación;
+- relaciones `blockedBy` para proteger el camino crítico;
+- cuatro ADR P0 en `Todo`;
+- implementación posterior en `Backlog` hasta aprobación.
+
+## Primer arranque
+
+OpenSymphony necesita una API key personal de Linear en la terminal. La conexión
+OAuth de la aplicación de escritorio no expone esa clave al proceso local.
+
+```bash
+source ~/.zshrc
+export LINEAR_API_KEY='lin_api_...'
+./scripts/doctor.sh
+./scripts/run.sh
+```
+
+En otra terminal:
+
+```bash
+cd /Users/macpro16/Documents/Codex/2026-08-15/ana/outputs/symphony-harness-postsismo
+./scripts/tui.sh
+```
+
+Detener el orquestador con `Ctrl-C`. No usar `Ctrl-Z`, porque puede dejar el
+proceso suspendido y conservar recursos abiertos.
+
+## Flujo
+
+```text
+Backlog -> Todo -> In Progress -> In Review -> Done
+```
+
+- El operador mueve una tarea elegida de `Backlog` a `Todo`.
+- OpenSymphony verifica dependencias y crea un espacio aislado.
+- Codex documenta la decisión o implementa, valida y crea una rama local.
+- La tarea pasa a `In Review`.
+- Una persona aprueba y mueve a `Done`, o devuelve a `In Progress`.
+
+## Límite actual
+
+El harness está instalado y configurado, pero no debe ejecutarse hasta exportar
+`LINEAR_API_KEY`. GitHub CLI tampoco está autenticado; por eso esta primera
+versión usa ramas en un origen local y revisión en Linear. Antes de colaboración
+multiusuario se debe conectar un repositorio remoto y adaptar el flujo de PR.
+
+## Documentación
+
+- [Resumen del producto](docs/product-brief.md)
+- [Grafo de tareas](docs/task-graph.md)
+- [Runbook](docs/runbook.md)
+- [Registro de decisiones](docs/decisions/README.md)

@@ -1,0 +1,16 @@
+.opensymphony*
+!.opensymphony/
+.opensymphony/*
+!.opensymphony/memory/
+.opensymphony/memory/*
+!.opensymphony/memory/memory.yaml
+.env
+.env.*
+!.env.example
+logs/
+*.log
+*.sqlite
+*.sqlite3
+*.db
+private-data/
+field-media/
