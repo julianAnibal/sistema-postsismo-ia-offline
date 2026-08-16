@@ -51,6 +51,7 @@ pasar por el formulario y la autoridad humana definida en DNA-58.
 | Inspección | formulario versionado y estados explícitos | guarda cada paso localmente |
 | Cámara | original, contexto/detalle, escala, calidad y hash | captura manual aunque la IA no esté disponible |
 | IA asistiva | control de calidad y anomalías visibles | nivel C, sin inferencia |
+| Asistente local | RAG, borradores y consultas estructuradas | reglas/UI disponibles sin LLM |
 | Persistencia | transacciones, migraciones, índices y auditoría | migración aborta y conserva copia válida |
 | Sincronización | pull delta, outbox, medios y conflictos | reintenta sin duplicar y no sobrescribe decisiones |
 | Diagnóstico del equipo | almacenamiento, modelo, red, batería y versión | bloquea sólo descargas/inferencia costosa |
@@ -240,6 +241,18 @@ Cada `ai_run` conserva:
 La confianza numérica no se traduce directamente a severidad estructural. No se
 usa verde para comunicar “seguro”. Si el modelo no fue validado para la
 tipología, el territorio o la calidad presente, se marca fuera de dominio.
+
+### Asistente generativo local
+
+Gemma 4 E2B/E4B se ejecuta mediante LiteRT-LM sólo en dispositivos admitidos.
+Consulta documentos locales aprobados y herramientas de lectura/validación. El
+teléfono conserva un límite corto de contexto para controlar memoria y no usa el
+historial como registro oficial. El asistente puede proponer texto o JSON, pero
+la aplicación valida el esquema y exige confirmación antes de guardar.
+
+El paquete base funciona sin LLM. Los modelos se descargan por perfil, con firma,
+hash, licencia, cuota y reversión. La especificación completa está en
+[`local-ai-data-pipeline.md`](local-ai-data-pipeline.md).
 
 ### Benchmark de admisión
 

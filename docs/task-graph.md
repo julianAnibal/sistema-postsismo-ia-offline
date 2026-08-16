@@ -31,10 +31,16 @@ flowchart TD
   M --> O
   O --> R["DNA-67 Esqueleto móvil"]
   U --> R
+  O --> T["DNA-82 Taxonomía/dataset"]
+  U --> T
+  T --> I["DNA-71 Modelo visual"]
   R --> D["DNA-68 SQLite"]
   D --> Y["DNA-74 Sincronización"]
   B["DNA-72 Backend"] --> Y
   Y --> W["DNA-75 Consola"]
+  T --> K["DNA-83 Mapas de afectación"]
+  B --> K
+  W --> K
   W --> E["DNA-78 Piloto E2E"]
   E --> X["DNA-79 Endurecimiento"]
   X --> N["DNA-80 Go/No-Go"]
@@ -49,8 +55,8 @@ confirme que sus dependencias y aprobaciones están completas.
 ## Frentes
 
 - **F1 Gobierno, datos y campo:** DNA-58, 60, 62, 63, 66 y 80.
-- **F2 Móvil, offline e IA:** DNA-57, 61, 65, 67, 68, 69, 70, 71, 74 y 81.
-- **F3 Plataforma, web e informes:** DNA-59, 64, 72, 73, 75, 76, 77, 78 y 79.
+- **F2 Móvil, offline e IA:** DNA-57, 61, 65, 67, 68, 69, 70, 71, 74, 81 y 82.
+- **F3 Plataforma, web e informes:** DNA-59, 64, 72, 73, 75, 76, 77, 78, 79 y 83.
 
 La asignación, las revisiones cruzadas y el contrato de ramas/PR están en
 [`team-workflow.md`](team-workflow.md).

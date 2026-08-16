@@ -11,8 +11,8 @@ revision y evidencia ejecutable.
 | Frente | Responsable | Alcance principal | Tareas lideradas |
 |---|---|---|---|
 | F1 Gobierno, datos y campo | Tercer colaborador (nombre y usuario GitHub pendientes) | autoridad, privacidad, formularios, piloto y go/no-go | DNA-58, DNA-60, DNA-62, DNA-63, DNA-66, DNA-80 |
-| F2 Movil, offline e IA | Julian (`@julianAnibal`) | harness, mapas, aplicacion movil, captura, IA local y sincronizacion | DNA-57, DNA-61, DNA-65, DNA-67, DNA-68, DNA-69, DNA-70, DNA-71, DNA-74, DNA-81 |
-| F3 Plataforma, web e informes | Luis (usuario GitHub pendiente) | ODK Central, API, datos, consola, informes y validacion | DNA-59, DNA-64, DNA-72, DNA-73, DNA-75, DNA-76, DNA-77, DNA-78, DNA-79 |
+| F2 Movil, offline e IA | Julian (`@julianAnibal`) | harness, mapas, aplicacion movil, captura, IA local y sincronizacion | DNA-57, DNA-61, DNA-65, DNA-67, DNA-68, DNA-69, DNA-70, DNA-71, DNA-74, DNA-81, DNA-82 |
+| F3 Plataforma, web e informes | Luis (usuario GitHub pendiente) | ODK Central, API, datos, consola, informes y validacion | DNA-59, DNA-64, DNA-72, DNA-73, DNA-75, DNA-76, DNA-77, DNA-78, DNA-79, DNA-83 |
 
 La asignacion es un punto de partida por arquitectura. Cada responsable lidera
 la entrega, pero no aprueba en solitario sus propias decisiones.
@@ -21,6 +21,8 @@ la entrega, pero no aprueba en solitario sus propias decisiones.
 
 - DNA-58 a DNA-61: cada ADR tiene un autor y revision de las otras dos personas.
 - DNA-81: Julian propone el runtime; F1 valida seguridad/UX y F3 contratos/sync.
+- DNA-82: F2 implementa dataset/modelos; F1 aprueba taxonomía y finalidad.
+- DNA-83: F3 implementa mapas; F1 valida significado y F2 separa predicciones IA.
 - DNA-62: no se cierra hasta demostrar que una tarea bloqueada no se despacha.
 - DNA-66: los tres participan en el simulacro ODK y su retrospectiva.
 - DNA-74: F2 lidera el cliente y F3 aprueba el contrato servidor.

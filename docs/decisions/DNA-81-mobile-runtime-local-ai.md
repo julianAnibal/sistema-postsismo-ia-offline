@@ -85,6 +85,20 @@ el teléfono.
 - El resultado se muestra como `sugerencia IA`, nunca como dictamen, placard,
   habitabilidad o autorización de ocupación.
 
+La IA generativa es un módulo opcional separado:
+
+- Gemma 4 E2B para equipos intermedios y E4B para equipos de capacidad alta;
+- LiteRT-LM como runtime móvil de Android/iOS;
+- nombre de producto `Asistente local`, con motor intercambiable;
+- RAG sobre documentos aprobados y herramientas locales con argumentos validados;
+- salidas como borrador estructurado, nunca escritura, sello o publicación
+  autónoma;
+- licencias y origen en avisos técnicos, sin convertir marcas de terceros en la
+  identidad visible de la aplicación.
+
+La arquitectura de fotografías, taxonomía, dataset y mapas está en
+[`local-ai-data-pipeline.md`](../local-ai-data-pipeline.md).
+
 #### Niveles de ejecución
 
 | Nivel | Ejecución | Experiencia |
@@ -223,3 +237,6 @@ migración compatibles anteriores; nunca se hace downgrade destructivo de datos.
 - [Almacenamiento web y desalojo](https://web.dev/articles/storage-for-the-web)
 - [Ultralytics Crack-Seg](https://docs.ultralytics.com/es/datasets/segment/crack-seg/)
 - [Opciones de licencia Ultralytics](https://www.ultralytics.com/license)
+- [Gemma 4: memoria y capacidades móviles](https://ai.google.dev/gemma/docs/core)
+- [Gemma 4: licencia Apache 2.0](https://ai.google.dev/gemma/apache_2)
+- [LiteRT-LM](https://developers.google.com/edge/litert-lm)

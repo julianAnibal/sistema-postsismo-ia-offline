@@ -181,6 +181,18 @@ Antes de cerrar se muestra una lista de verificación:
 en bloques distintos `Observado`, `Sugerido por IA`, `Conclusión profesional` y
 `Acción autorizada`. Tras sellar, corregir crea una nueva versión.
 
+### Asistente local contextual
+
+El asistente se abre desde una observación o desde el resumen, sin ocupar un
+destino principal. Puede buscar una fuente aprobada, señalar campos faltantes y
+proponer un borrador. Cada respuesta muestra fuente, vigencia y acciones
+`Insertar como borrador`, `Descartar` o `Ver fuente`.
+
+No responde en lugar de la persona, no ejecuta automáticamente herramientas de
+escritura y no presenta su texto como diagnóstico. Si el teléfono no admite el
+modelo, los mismos controles de reglas y búsqueda textual siguen disponibles.
+La marca del motor aparece únicamente en información técnica/licencias.
+
 ### 9. Sincronización
 
 La pantalla de sincronización muestra contadores estables:

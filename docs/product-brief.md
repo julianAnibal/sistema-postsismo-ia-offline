@@ -18,7 +18,8 @@ teléfonos del piloto.
 | Piloto | ODK Collect y ODK Central privado |
 | Móvil | React Native + Expo con compilación nativa; sin daemon permanente |
 | Datos locales | SQLite/SQLCipher, WAL, migraciones, archivos privados y outbox |
-| IA | ONNX Runtime React Native con niveles A/B/C y modo manual siempre disponible |
+| IA visual | ONNX Runtime React Native con niveles A/B/C y modo manual siempre disponible |
+| Asistente local | Gemma 4 E2B/E4B opcional con LiteRT-LM, RAG y herramientas restringidas |
 | Mapa móvil | MapLibre Native con paquetes autorizados |
 | Núcleo | API versionada, PostgreSQL/PostGIS y objetos privados |
 | Web maestra | Next.js/OpenLayers existente con consola autenticada |
@@ -41,6 +42,8 @@ reporte ciudadano, una inferencia remota y una inspección profesional.
 - La IA no emite clasificación oficial ni detecta personas atrapadas.
 - No se promete compatibilidad universal; se publica una matriz medida por nivel.
 - La PWA es contingencia, no la única copia de una inspección crítica.
+- El asistente puede redactar borradores y citar fuentes; no firma ni publica.
+- Fotos originales, derivados de entrenamiento y capas IA son objetos distintos.
 - Edificación, hogar, persona, rescate y publicación son dominios separados.
 - Una foto sin escala no mide de forma confiable el ancho de una grieta.
 - OpenStreetMap es fuente cartográfica, no servidor gratuito de mapas offline.
