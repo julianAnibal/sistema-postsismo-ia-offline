@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Sierra Clara",
-    "slug": "sierra-clara-field",
+    "name": "1000 Ojos",
+    "slug": "1000-ojos",
     "version": "1.0.0",
     "scheme": "sierraclara",
     "orientation": "portrait",
@@ -22,15 +22,15 @@
       "favicon": "./assets/sierra-clara-favicon.png",
       "bundler": "metro",
       "output": "single",
-      "name": "Sierra Clara",
-      "shortName": "Sierra Clara"
+      "name": "1000 Ojos",
+      "shortName": "1000 Ojos"
     },
     "plugins": [
       [
         "expo-image-picker",
         {
-          "photosPermission": "Sierra Clara usa la foto seleccionada como evidencia de la inspección.",
-          "cameraPermission": "Sierra Clara usa la cámara para registrar evidencia de campo.",
+          "photosPermission": "1000 Ojos usa la foto seleccionada como evidencia de la inspección.",
+          "cameraPermission": "1000 Ojos usa la cámara para registrar evidencia de campo.",
           "microphonePermission": false
         }
       ]

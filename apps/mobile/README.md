@@ -1,4 +1,4 @@
-# Sierra Clara Field
+# 1000 Ojos
 
 Prototipo DNA-84 de captura post-sismo para teléfono y web instalable. Funciona
 sin servidor con datos sintéticos y conserva los cambios en el dispositivo.

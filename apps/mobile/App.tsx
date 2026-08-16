@@ -81,7 +81,7 @@ export default function App() {
           <ShieldCheck size={22} color={colors.white} />
         </View>
         <View style={styles.headerText}>
-          <Text style={styles.brand}>Sierra Clara</Text>
+          <Text style={styles.brand}>1000 Ojos</Text>
           <Text style={styles.operation} numberOfLines={1}>{state.operationName}</Text>
         </View>
         <View style={styles.headerState}>

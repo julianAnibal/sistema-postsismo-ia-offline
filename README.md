@@ -26,7 +26,7 @@ mantiene las tareas de alto riesgo bloqueadas por ADRs aprobadas.
 
 ## Prototipo móvil DNA-84
 
-La rama `work/DNA-84-mobile-prototype` incorpora **Sierra Clara**, una aplicación
+La rama `work/DNA-84-mobile-prototype` incorpora **1000 Ojos**, una aplicación
 Expo que se ejecuta en Android, iOS y web instalable. El prototipo trabaja sin
 servidor, usa datos sintéticos e implementa fichas de inspección, evidencia con
 SHA-256, consulta documental local, mapas agregados y una cola de cambios.

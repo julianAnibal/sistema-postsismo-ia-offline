@@ -1,4 +1,4 @@
-const CACHE = 'sierra-clara-v2';
+const CACHE = '1000-ojos-v3';
 const CORE = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', (event) => {
