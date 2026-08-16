@@ -14,3 +14,9 @@ logs/
 *.db
 private-data/
 field-media/
+ml/artifacts/
+ml/runs/
+ml/models/
+__pycache__/
+*.pyc
+.netlify/

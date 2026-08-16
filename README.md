@@ -24,6 +24,28 @@ mantiene las tareas de alto riesgo bloqueadas por ADRs aprobadas.
 - cuatro ADR P0 en `Todo`;
 - implementación posterior en `Backlog` hasta aprobación.
 
+## Prototipo móvil DNA-84
+
+La rama `work/DNA-84-mobile-prototype` incorpora **1000 Ojos**, una aplicación
+Expo que se ejecuta en Android, iOS y web instalable. El prototipo trabaja sin
+servidor, usa datos sintéticos e implementa fichas de inspección, evidencia con
+SHA-256, consulta documental local, mapas agregados y una cola de cambios.
+
+```bash
+cd apps/mobile
+npm ci
+npm run web
+```
+
+Detalles de funcionamiento y límites: [apps/mobile/README.md](apps/mobile/README.md).
+
+## Entrenamiento de IA
+
+El recorrido reproducible de preparación de datos, fine-tuning LoRA,
+segmentación visual, evaluación y empaquetado móvil está en
+[ml/README.md](ml/README.md). Los controles operativos y de seguridad están en
+[docs/training-runbook.md](docs/training-runbook.md).
+
 ## Primer arranque
 
 OpenSymphony necesita una API key personal de Linear en la terminal. La conexión
